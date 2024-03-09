@@ -2,7 +2,7 @@ name: StockAnalysis Tests
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
       - "**"
@@ -18,7 +18,7 @@ jobs:
         with:
           dotnet-version: '7.x'
       - name: Install dependencies
-        run: dotnen restore
+        run: dotnet restore
       - name: Build
         run: dotnet build
       - name: Test
