@@ -12,15 +12,14 @@ public class DownloadManager
         StoragePath = storagePath;
     }
 
-    public async Task<bool> DownloadHoldingsCsv(HoldingInformation[] uris, HttpClient client)
+    public async Task<bool> DownloadHoldingsCsv(IEnumerable<HoldingInformation> uris, HttpClient client)
     {
         try
         {
             foreach (var uri in uris)
             {
-                var stream = await Download.GetCsv(uri.Uri, client);
-                await Storage.WriteToFileSystem(stream, StoragePath, uri.Name + CsvExtension);
-                stream.Close();
+                await using var stream = await Download.GetCsv(uri.Uri, client);
+                return await Storage.WriteToFileSystem(stream, StoragePath, uri.Name + CsvExtension);
             }
         }
         catch (Exception)
