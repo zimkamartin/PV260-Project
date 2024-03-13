@@ -19,7 +19,10 @@ public class DownloadManager
             foreach (var uri in uris)
             {
                 await using var stream = await Download.GetCsv(uri.Uri, client);
-                return await Storage.WriteToFileSystem(stream, StoragePath, uri.Name + CsvExtension);
+                if (!await Storage.WriteToFileSystem(stream, StoragePath, uri.Name + CsvExtension))
+                {
+                    return false;
+                }
             }
         }
         catch (Exception)

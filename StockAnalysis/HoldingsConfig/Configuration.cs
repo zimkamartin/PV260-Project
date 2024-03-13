@@ -25,7 +25,7 @@ public class Configuration
             return holding.HoldingInfo.ToArray();
         }
         //ToDo: Gotta catch 'em all!
-        catch (ArgumentNullException e)
+        catch (Exception e) when (e is ArgumentNullException || e is FileNotFoundException )
         {
             return Array.Empty<HoldingInformation>();
         }
