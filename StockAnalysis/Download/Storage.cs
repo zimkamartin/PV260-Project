@@ -9,6 +9,9 @@ public static class Storage
     /// <param name="path">The path to where the stream contents should be stored.</param>
     /// <param name="name">The desired name of the file that will be created.</param>
     /// <returns>Value indicating whether the write succeeded.</returns>
+    /// <exception cref="ObjectDisposedException">The stream was closed prematurely.</exception>
+    /// <exception cref="PathTooLongException">The path is too long.</exception>
+    /// <exception cref="UnauthorizedAccessException">The file could not be created.</exception>
     public static async Task<bool> WriteToFileSystem(Stream stream, string path, string name)
     {
         if (stream is { CanRead: false, CanSeek: false })
@@ -23,10 +26,16 @@ public static class Storage
             await stream.CopyToAsync(fileStream);
             return true;
         }
-        //ToDo: Improve / Rework.
-        catch (Exception)
+        catch (Exception e) when (e is DirectoryNotFoundException 
+                                      or NotSupportedException 
+                                      or IOException)
         {
             return false;
+        }
+        // Rethrow.
+        catch (Exception)
+        {
+            throw;
         }
     }
 }
