@@ -19,7 +19,7 @@ public class ConfigTests
     }
     
     [Test]
-    public async Task ReadConfigEmpty()
+    public async Task Configuration_LoadConfiguration_EmptyFile()
     {
         var config = new Configuration(_projectRoot + "/Mocks/empty_config.json");
         var holdings = await config.LoadConfiguration();
@@ -28,7 +28,7 @@ public class ConfigTests
     }
 
     [Test]
-    public async Task ReadConfigSingle()
+    public async Task Configuration_LoadConfiguration_SingleEntry()
     {
         var config = new Configuration(_projectRoot + "/Mocks/single_config.json");
 
@@ -43,7 +43,7 @@ public class ConfigTests
     }
 
     [Test]
-    public async Task ReadConfigMultiple()
+    public async Task Configuration_LoadConfiguration_MultipleEntries()
     {
         var config = new Configuration(_projectRoot + "/Mocks/multi_config.json");
 
@@ -70,7 +70,7 @@ public class ConfigTests
     }
 
     [Test]
-    public async Task ReadConfigFileNotExists()
+    public async Task Configuration_LoadConfiguration_NonExistentFile()
     {
         var config = new Configuration(_projectRoot + "/Mocks/xxxNotExistsxxx.json");
 

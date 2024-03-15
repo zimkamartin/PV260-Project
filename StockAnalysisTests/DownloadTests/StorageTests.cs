@@ -20,17 +20,29 @@ public class StorageTests
     }
     
     [Test]
-    public async Task SimpleStorageTest()
+    public async Task Storage_WriteToFileSystem_WritesStreamToTextFile()
     {
+        // Arrange
+        var totalPath = Path.Join(_projectRoot, "test.txt");
         UnicodeEncoding encoding = new();
         const string text = "This is a sample text.";
         var bytes = encoding.GetBytes(text);
-
         using var memoryStream = new MemoryStream(bytes);
-        await Storage.WriteToFileSystem(memoryStream, _projectRoot!, "test.txt");
-        var totalPath = Path.Join(_projectRoot, "test.txt");
-        Assert.That(File.Exists(totalPath), Is.True);
+        
+        // Act
+        try
+        {
+            await Storage.WriteToFileSystem(memoryStream, _projectRoot!, "test.txt");
+        }
+        catch (Exception e)
+        {
+            // Assert
+            Assert.Fail("Method threw an exception when it was not supposed to: " + e.Message);
+        }
         var actualBytes = await File.ReadAllBytesAsync(totalPath);
+
+        // Assert
+        Assert.That(File.Exists(totalPath), Is.True);
         Assert.That(actualBytes, Is.EqualTo(bytes));
         
         // Cleanup.

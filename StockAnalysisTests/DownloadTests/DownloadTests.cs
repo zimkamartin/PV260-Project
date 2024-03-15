@@ -1,58 +1,40 @@
 using StockAnalysis.Download;
-using StockAnalysis.HoldingsConfig;
-
 
 namespace StockAnalysisTests.DownloadTests;
 
 public class DownloadTests
 {
     [Test]
-    public async Task DownloadSingleCsv()
+    public async Task Download_GetCsv_Succeeds()
     {
-        HoldingInformation[] holdings =
-        {
-            new("ARKK-Holdings",
-                "https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv")
-        };
-        var manager = new DownloadManager(".");
+        // Arrange
+        // It might be better to mock a simple rest API service instead of sending requests to ark-funds.
+        // Will improve this if I get the time.
+        var uri = "https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv";
         using var client = new HttpClient();
         
         // This is necessary, otherwise the website will reject our request.
         client.DefaultRequestHeaders.Add("User-Agent", "Other");
-        
-        Assert.That(await manager.DownloadHoldingsCsv(holdings, client), Is.True);
-        Assert.That(File.Exists("./ARKK-Holdings.csv"), Is.True);
-        
-        // Cleanup.
-        File.Delete("./ARKK-Holdings.csv");
-        Assert.That(File.Exists("./ARKK-Holdings.csv"), Is.False);
-    }
 
-    [Test]
-    public async Task DownloadMultipleCsv()
-    {
-        HoldingInformation[] holdings =
+        try
         {
-            new("ARKK-Holdings",
-                "https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv"),
-            new("ARKG-Holdings",
-                "https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_GENOMIC_REVOLUTION_ETF_ARKG_HOLDINGS.csv")
-        };
-        var manager = new DownloadManager(".");
-        using var client = new HttpClient();
-        
-        // This is necessary, otherwise the website will reject our request.
-        client.DefaultRequestHeaders.Add("User-Agent", "Other");
-        
-        Assert.That(await manager.DownloadHoldingsCsv(holdings, client), Is.True);
-        Assert.That(File.Exists("./ARKK-Holdings.csv"), Is.True);
-        Assert.That(File.Exists("./ARKG-Holdings.csv"), Is.True);
-        
-        // Cleanup.
-        File.Delete("./ARKK-Holdings.csv");
-        Assert.That(File.Exists("./ARKK-Holdings.csv"), Is.False);
-        File.Delete("./ARKG-Holdings.csv");
-        Assert.That(File.Exists("./ARKG-Holdings.csv"), Is.False);
-        
+            // Act
+            await using var resultStream = await Download.GetCsv(uri, client);
+            
+            // Assert
+            // There is some data in the stream.
+            Assert.That( resultStream.Length, Is.GreaterThan(0) );
+            // Needed properties of the stream.
+            Assert.Multiple(() =>
+            {
+                Assert.That(resultStream.CanRead, Is.True);
+                Assert.That(resultStream.CanSeek, Is.True);
+            });
+        }
+        catch (Exception e)
+        {
+            // Assert
+            Assert.Fail("Method threw an exception when it shouldn't have: " + e.Message);
+        }
     }
 }
