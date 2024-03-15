@@ -1,4 +1,4 @@
-namespace StockAnalysis.Download;
+namespace StockAnalysis.HoldingsConfig;
 
 public struct Holdings
 {

@@ -1,3 +1,5 @@
+using StockAnalysis.HoldingsConfig;
+
 namespace StockAnalysis.Download;
 
 public class DownloadManager

@@ -1,4 +1,3 @@
-using System.Text;
 using StockAnalysis.HoldingsConfig;
 
 namespace StockAnalysisTests.DownloadTests;
