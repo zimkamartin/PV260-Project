@@ -75,8 +75,15 @@ public class ConfigTests
     {
         var config = new Configuration(_projectRoot + "/Mocks/xxxNotExistsxxx.json");
 
-        var holdings = await config.LoadConfiguration();
+        try
+        {
+            var holdings = await config.LoadConfiguration();
+        }
+        catch (FileNotFoundException)
+        {
+            Assert.Pass("Method successfully threw FileNotFoundException.");
+        }
         
-        Assert.That(holdings, Is.Empty);
+        Assert.Fail("The method was expected to throw FileNotFoundException.");
     }
 }

@@ -5,7 +5,7 @@ namespace StockAnalysis.HoldingsConfig;
 
 public class Configuration
 {
-    public string ConfigurationPath { get; }
+    public string ConfigurationPath { get; set; }
 
     public Configuration(string configurationPath)
     {
@@ -13,9 +13,16 @@ public class Configuration
     }
 
     /// <summary>
-    /// Loads configuration from preset file path.
+    /// Loads configuration from preset file path. The configuration must be in a JSON format
+    /// that corresponds with the 
     /// </summary>
     /// <returns>Information about desired ETF holdings in an array. Can be empty if an issue arose during loading.</returns>
+    /// <exception cref="DirectoryNotFoundException">The directory (and therefore the file) of the configuration file does not exist.</exception>
+    /// <exception cref="PathTooLongException">The path to the configuration file is too long.</exception>
+    /// <exception cref="UnauthorizedAccessException">The program can't access the configuration file.</exception>
+    /// <exception cref="NotSupportedException">The configuration could not be serialized.</exception>
+    /// <exception cref="IOException">An I/O error occured while opening the configuration file.</exception>
+    /// <exception cref="FileNotFoundException">The supplied configuration file does not exist.</exception>
     public async Task<HoldingInformation[]> LoadConfiguration()
     {
         try
@@ -25,9 +32,14 @@ public class Configuration
             return holding.HoldingInfo.ToArray();
         }
         //ToDo: Gotta catch 'em all!
-        catch (Exception e) when (e is ArgumentNullException || e is FileNotFoundException )
+        catch (Exception e) when (e is ArgumentNullException
+                                      or JsonException )
         {
             return Array.Empty<HoldingInformation>();
+        }
+        catch (Exception)
+        {
+            throw;
         }
     }
 }
