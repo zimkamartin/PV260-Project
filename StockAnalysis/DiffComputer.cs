@@ -1,9 +1,8 @@
-﻿// See https://aka.ms/new-console-template for more information
-using CsvHelper;
+﻿using CsvHelper;
 using CsvHelper.Configuration.Attributes;
 using System.Globalization;
 
-namespace SemestralProject
+namespace StockAnalysis
 {
     public class FundData
     {
@@ -23,18 +22,18 @@ namespace SemestralProject
         public string Cusip { get; set; }
 
         [Name("shares")]
-        public long Shares { get; set; }
+        public string Shares { get; set; }
 
         [Name("market value ($)")]
-        public decimal MarketValue { get; set; }
+        public string MarketValue { get; set; }
 
         [Name("weight (%)")]
-        public decimal Weight { get; set; }
+        public string Weight { get; set; }
     }
 
     class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             // Load old.csv and new.csv
             List<FundData> oldData = LoadData("old.csv");
@@ -70,9 +69,9 @@ namespace SemestralProject
 
                 if (oldDataEntry != null)
                 {
-                    var sharesChange = newDataEntry.Shares - oldDataEntry.Shares;
-                    var marketValueChange = newDataEntry.MarketValue - oldDataEntry.MarketValue;
-                    var weightChange = newDataEntry.Weight - oldDataEntry.Weight;
+                    var sharesChange = StringToNumber(newDataEntry.Shares) - StringToNumber(oldDataEntry.Shares);
+                    var marketValueChange = StringToNumber(newDataEntry.MarketValue) - StringToNumber(oldDataEntry.MarketValue);
+                    var weightChange = StringToNumber(newDataEntry.Weight) - StringToNumber(oldDataEntry.Weight);
 
                     changes.Add(new ChangeData
                     {
@@ -87,14 +86,23 @@ namespace SemestralProject
 
             return changes;
         }
+
+        static double StringToNumber(String data)
+        {
+            data = data.Replace(",", "");
+            data = data.Replace("$","");
+            data = data.Replace("%", "");
+            Console.WriteLine(data+"DATAAAAAAAAAAAAAAAAAA");
+            return double.Parse(data, CultureInfo.InvariantCulture);
+        }
     }
 
     public class ChangeData
     {
         public string Company { get; set; }
         public string Ticker { get; set; }
-        public long SharesChange { get; set; }
-        public decimal MarketValueChange { get; set; }
-        public decimal WeightChange { get; set; }
+        public double SharesChange { get; set; }
+        public double MarketValueChange { get; set; }
+        public double WeightChange { get; set; }
     }
 }
