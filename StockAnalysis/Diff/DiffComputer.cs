@@ -55,7 +55,7 @@ public class DiffComputer
         }
     }
 
-    static List<DiffData> ComputeChanges(List<FundData> oldData, List<FundData> newData)
+    public static List<DiffData> ComputeChanges(List<FundData> oldData, List<FundData> newData)
     {
         var changes = new List<DiffData>();
 
@@ -68,7 +68,7 @@ public class DiffComputer
                 var sharesChange = StringToNumber(newDataEntry.Shares) - StringToNumber(oldDataEntry.Shares);
                 var marketValueChange =
                     StringToNumber(newDataEntry.MarketValue) - StringToNumber(oldDataEntry.MarketValue);
-                //var weightChange = StringToNumber(newDataEntry.Weight) - StringToNumber(oldDataEntry.Weight);
+                var weightChange = StringToNumber(newDataEntry.Weight) - StringToNumber(oldDataEntry.Weight);
 
                 changes.Add(new DiffData
                 {
@@ -76,7 +76,7 @@ public class DiffComputer
                     Ticker = newDataEntry.Ticker,
                     SharesChange = sharesChange,
                     MarketValueChange = marketValueChange,
-                    Weight = StringToNumber(newDataEntry.Weight),
+                    Weight = weightChange,
                     NewEntry = false
                 });
             }
