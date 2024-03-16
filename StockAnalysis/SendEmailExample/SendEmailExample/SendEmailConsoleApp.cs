@@ -5,10 +5,10 @@ namespace SendEmailExample;
 
 public class SendEmailConsoleApp : IConsoleApp
 {
-    public Task SendMail(List<string> mailAddresses, string attachmentPath)
+    public async Task SendMail(List<string> mailAddresses, string attachmentPath)
     {
         string fromMail = "pv260.s24.goth.pinkteam@gmail.com";
-        string fromPassword = "here WAS a password";
+        string fromPassword = Environment.GetEnvironmentVariable("PV260-email-password") ?? "password";  // TODO: do it using .env file
         
         MailMessage message = new MailMessage();
         message.From = new MailAddress(fromMail);
@@ -37,12 +37,21 @@ public class SendEmailConsoleApp : IConsoleApp
             }
         }
         
-        SmtpClient client = new SmtpClient("smtp.gmail.com")
+        try
         {
-            Port = 587,
-            Credentials = new NetworkCredential(fromMail, fromPassword),
-            EnableSsl = true,
-        };
-        return client.SendMailAsync(message);
+            SmtpClient client = new SmtpClient("smtp.gmail.com")
+            {
+                Port = 587,
+                Credentials = new NetworkCredential(fromMail, fromPassword),
+                EnableSsl = true,
+            };
+
+            await client.SendMailAsync(message);
+        }
+        catch (SmtpException e)
+        {
+            Console.WriteLine("There was an Smtp exception, most probably the password was set wrongly.");
+            throw;
+        }
     }
 }
