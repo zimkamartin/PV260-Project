@@ -4,29 +4,6 @@ namespace StockAnalysisTests.DiffTests;
 
 public class DiffComputerTests
 {
-    private string? _projectRoot;
-    
-    [SetUp]
-    public void Setup()
-    {  
-        var current = Environment.CurrentDirectory;
-        var projectDirectory = Directory.GetParent(current);
-        _projectRoot = current;
-        if (projectDirectory is not null)
-        {
-            _projectRoot = projectDirectory.Parent!.Parent!.FullName;
-        }
-    }
-
-    //creates file diff.csv
-    //TODO
-    [Test]
-    public async Task DiffTest()
-    {
-        bool result = await DiffComputer.CreateAndStoreDiff(_projectRoot);
-        Assert.IsTrue(result);
-    }
-    
     //If changes are computwd correctly
     [Test]
     public void ComputeChanges_ShouldCalculateChangesCorrectly()
@@ -54,12 +31,12 @@ public class DiffComputerTests
         Assert.AreEqual("TICK1", changes[0].Ticker);
         Assert.AreEqual(50, changes[0].SharesChange);
         Assert.AreEqual(500, changes[0].MarketValueChange);
-        Assert.AreEqual(5, changes[0].Weight);
+        Assert.AreEqual(15, changes[0].Weight);
 
         Assert.AreEqual("TICK2", changes[1].Ticker);
         Assert.AreEqual(50, changes[1].SharesChange);
         Assert.AreEqual(500, changes[1].MarketValueChange);
-        Assert.AreEqual(5, changes[1].Weight);
+        Assert.AreEqual(25, changes[1].Weight);
     }
     
     

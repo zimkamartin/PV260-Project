@@ -25,7 +25,7 @@ public class FundData
 
 public class DiffComputer
 {
-    public static async Task<bool> CreateAndStoreDiff(string path)
+    public static List<DiffData> CreateDiff(string path)
     {
         // Load old.csv and new.csv
         List<FundData> oldData = LoadData(path + Path.DirectorySeparatorChar +"old.csv");
@@ -35,15 +35,15 @@ public class DiffComputer
         var changes = ComputeChanges(oldData, newData);
 
         // Output changes
-        Console.WriteLine("Changes:");
-        foreach (var change in changes)
-        {
-            Console.WriteLine(
-                $"Company: {change.Company}, Ticker: {change.Ticker}, Shares Change: {change.SharesChange}, Market Value Change: {change.MarketValueChange}, Weight: {change.Weight}, New: {change.NewEntry}");
-        }
+        //Console.WriteLine("Changes:");
+        //foreach (var change in changes)
+        //{
+          //  Console.WriteLine(
+            //    $"Company: {change.Company}, Ticker: {change.Ticker}, Shares Change: {change.SharesChange}, Market Value Change: {change.MarketValueChange}, Weight: {change.Weight}, New: {change.NewEntry}");
+        //}
 
         //save new diff, name set as diff for now
-        return await DiffStore.StoreDiff(changes, path, "diff");
+        return changes;
     }
 
     static List<FundData> LoadData(string filename)
@@ -68,7 +68,6 @@ public class DiffComputer
                 var sharesChange = StringToNumber(newDataEntry.Shares) - StringToNumber(oldDataEntry.Shares);
                 var marketValueChange =
                     StringToNumber(newDataEntry.MarketValue) - StringToNumber(oldDataEntry.MarketValue);
-                var weightChange = StringToNumber(newDataEntry.Weight) - StringToNumber(oldDataEntry.Weight);
 
                 changes.Add(new DiffData
                 {
@@ -76,7 +75,7 @@ public class DiffComputer
                     Ticker = newDataEntry.Ticker,
                     SharesChange = sharesChange,
                     MarketValueChange = marketValueChange,
-                    Weight = weightChange,
+                    Weight = StringToNumber(newDataEntry.Weight),
                     NewEntry = false
                 });
             }

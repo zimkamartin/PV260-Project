@@ -6,9 +6,13 @@ public class DiffStore
 {
     public static async Task<bool> StoreDiff(List<DiffData> data, String path, String name)
     {
+        //divide data to new, old, new entries
         List<DiffData> newEntries = data.Where(a => a.NewEntry).ToList();
         List<DiffData> oldEntriesPositive = data.Where(a => !a.NewEntry && a.SharesChange >= 0).ToList();
         List<DiffData> oldEntriesNegative = data.Where(a => !a.NewEntry && a.SharesChange < 0).ToList();
+        
+        //change shares to absolute number - would be negative
+        oldEntriesNegative.ForEach(a => a.SharesChange = double.Abs(a.SharesChange));
         
         var finalPath = Path.Combine(path, name + ".csv");
         try
@@ -16,8 +20,8 @@ public class DiffStore
             await using var fileStream = File.Create(finalPath);
             {
                 WriteDiffPositions(fileStream, newEntries, "New", "");
-                WriteDiffPositions(fileStream, oldEntriesPositive, "Increased", "(\u2191x%)");
-                WriteDiffPositions(fileStream, oldEntriesNegative, "Reduced", "\u2193x%");
+                WriteDiffPositions(fileStream, oldEntriesPositive, "Increased", " up%");
+                WriteDiffPositions(fileStream, oldEntriesNegative, "Reduced", " down%");
             }
             fileStream.Close();
             return true;
