@@ -1,0 +1,17 @@
+{
+  "HoldingInfo": 
+          [
+            {
+              "Name": "Holding1",
+              "Uri": "Uri1"
+            },
+            {
+              "Name": "Holding2",
+              "Uri": ""
+            },
+            {
+              "Name": "Holding3",
+              "Uri": ".Uri3"
+            }
+          ]
+}
