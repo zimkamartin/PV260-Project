@@ -1,19 +1,18 @@
 using System.Net;
 using System.Net.Mail;
+namespace StockAnalysis.SendEmail;
 
-namespace SendEmailExample;
-
-public class SendEmailConsoleApp : IConsoleApp
+public static class Sender
 {
-    public async Task SendMail(List<string> mailAddresses, string attachmentPath)
+    public static async Task SendMail(List<string> mailAddresses, string attachmentPath)
     {
-        string fromMail = "pv260.s24.goth.pinkteam@gmail.com";
-        string fromPassword = Environment.GetEnvironmentVariable("PV260-email-password") ?? "password";  // TODO: do it using .env file
+        const string fromMail = "pv260.s24.goth.pinkteam@gmail.com";
+        var fromPassword = Environment.GetEnvironmentVariable("PV260-email-password") ?? "password";  // TODO: do it using .env file
         
-        MailMessage message = new MailMessage();
+        var message = new MailMessage();
         message.From = new MailAddress(fromMail);
-        message.Subject = $"Diff for month {DateTime.Now.ToString("MMMM")}";
-        foreach (string ma in mailAddresses)
+        message.Subject = $"Diff for month {DateTime.Now:MMMM}";
+        foreach (var ma in mailAddresses)
         {
             message.Bcc.Add(new MailAddress(ma));
         }
@@ -39,16 +38,14 @@ public class SendEmailConsoleApp : IConsoleApp
         
         try
         {
-            SmtpClient client = new SmtpClient("smtp.gmail.com")
-            {
-                Port = 587,
-                Credentials = new NetworkCredential(fromMail, fromPassword),
-                EnableSsl = true,
-            };
+            using var client = new SmtpClient("smtp.gmail.com");
+            client.Port = 587;
+            client.Credentials = new NetworkCredential(fromMail, fromPassword);
+            client.EnableSsl = true;
 
             await client.SendMailAsync(message);
         }
-        catch (SmtpException e)
+        catch (SmtpException)
         {
             Console.WriteLine("There was an Smtp exception, most probably the password was set wrongly.");
             throw;
