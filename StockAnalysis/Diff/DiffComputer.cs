@@ -23,36 +23,30 @@ public class FundData
     [Name("weight (%)")] public string Weight { get; set; }
 }
 
-public class DiffComputer
+public static class DiffComputer
 {
     public static List<DiffData> CreateDiff(string path)
     {
+        var oldFile = Path.GetDirectoryName(path) + Path.DirectorySeparatorChar +
+                      Path.GetFileNameWithoutExtension(path) + "-old" + Path.GetExtension(path);
+        var newFile = Path.GetDirectoryName(path) + Path.DirectorySeparatorChar +
+                      Path.GetFileNameWithoutExtension(path) + "-new" + Path.GetExtension(path);
         // Load old.csv and new.csv
-        List<FundData> oldData = LoadData(path + Path.DirectorySeparatorChar +"old.csv");
-        List<FundData> newData = LoadData(path + Path.DirectorySeparatorChar + "new.csv");
+        List<FundData> oldData = LoadData(oldFile);
+        List<FundData> newData = LoadData(newFile);
 
         // Compute changes
         var changes = ComputeChanges(oldData, newData);
-
-        // Output changes
-        //Console.WriteLine("Changes:");
-        //foreach (var change in changes)
-        //{
-          //  Console.WriteLine(
-            //    $"Company: {change.Company}, Ticker: {change.Ticker}, Shares Change: {change.SharesChange}, Market Value Change: {change.MarketValueChange}, Weight: {change.Weight}, New: {change.NewEntry}");
-        //}
 
         //save new diff, name set as diff for now
         return changes;
     }
 
-    static List<FundData> LoadData(string filename)
+    private static List<FundData> LoadData(string filename)
     {
-        using (var reader = new StreamReader(filename))
-        using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
-        {
-            return csv.GetRecords<FundData>().ToList();
-        }
+        using var reader = new StreamReader(filename);
+        using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+        return csv.GetRecords<FundData>().ToList();
     }
 
     public static List<DiffData> ComputeChanges(List<FundData> oldData, List<FundData> newData)
@@ -96,12 +90,11 @@ public class DiffComputer
         return changes;
     }
 
-    static double StringToNumber(String data)
+    private static double StringToNumber(string data)
     {
         data = data.Replace(",", "");
         data = data.Replace("$", "");
         data = data.Replace("%", "");
-        //Console.WriteLine(data + "DATAAAAAAAAAAAAAAAAAA");
         return double.Parse(data, CultureInfo.InvariantCulture);
     }
 }

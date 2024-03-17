@@ -26,7 +26,7 @@ public class DownloadManager
             foreach (var uri in holdings)
             {
                 await using var stream = await Download.GetCsv(uri.Uri, client);
-                if (!await Storage.WriteToFileSystem(stream, StoragePath, uri.Name + CsvExtension))
+                if (!await Storage.WriteToFileSystem(stream, StoragePath, uri.Name + "-new" + CsvExtension))
                 {
                     return false;
                 }

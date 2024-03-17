@@ -2,7 +2,7 @@
 
 namespace StockAnalysis.Diff;
 
-public class DiffStore
+public static class DiffStore
 {
     public static async Task<bool> StoreDiff(List<DiffData> data, String path, String name)
     {

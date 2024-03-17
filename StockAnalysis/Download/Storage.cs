@@ -24,6 +24,7 @@ public static class Storage
             stream.Seek(0, SeekOrigin.Begin);
             await using var fileStream = File.Create(finalPath);
             await stream.CopyToAsync(fileStream);
+            RemoveLastLine(fileStream);
             return true;
         }
         catch (Exception e) when (e is DirectoryNotFoundException 
@@ -36,6 +37,30 @@ public static class Storage
         catch (Exception)
         {
             throw;
+        }
+    }
+
+    // The last line in the ARK Holdings csv files is filled with plaintext that makes the diff tool crash. :(
+    private static void RemoveLastLine(Stream stream)
+    {
+        stream.Seek(0, SeekOrigin.Begin);
+        using var reader = new StreamReader(stream);
+        long offset = 0;
+        long prev_line_len = 0;
+        string? line = "";
+        while (line != null)
+        {
+            offset += line.Length + 1;
+            line = reader.ReadLine();
+            if (line != null)
+            {
+                prev_line_len = line.Length + 1;
+            }
+        }
+
+        if (offset - prev_line_len - 1 > 0)
+        {
+            stream.SetLength(offset - prev_line_len - 1);
         }
     }
 }

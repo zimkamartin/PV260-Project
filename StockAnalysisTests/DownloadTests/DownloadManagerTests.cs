@@ -26,11 +26,11 @@ public class DownloadManagerTests
         
         // Assert
         Assert.That(result, Is.True);
-        Assert.That(File.Exists("./ARKK-Holdings.csv"), Is.True);
+        Assert.That(File.Exists("./ARKK-Holdings-new.csv"), Is.True);
         
         // Cleanup.
-        File.Delete("./ARKK-Holdings.csv");
-        Assert.That(File.Exists("./ARKK-Holdings.csv"), Is.False);
+        File.Delete("./ARKK-Holdings-new.csv");
+        Assert.That(File.Exists("./ARKK-Holdings-new.csv"), Is.False);
     }
 
     [Test]
@@ -57,14 +57,14 @@ public class DownloadManagerTests
 
             // Assert
             Assert.That(result, Is.True);
-            Assert.That(File.Exists("./ARKK-Holdings.csv"), Is.True);
-            Assert.That(File.Exists("./ARKG-Holdings.csv"), Is.True);
+            Assert.That(File.Exists("./ARKK-Holdings-new.csv"), Is.True);
+            Assert.That(File.Exists("./ARKG-Holdings-new.csv"), Is.True);
         });
 
         // Cleanup.
-        File.Delete("./ARKK-Holdings.csv");
-        Assert.That(File.Exists("./ARKK-Holdings.csv"), Is.False);
-        File.Delete("./ARKG-Holdings.csv");
-        Assert.That(File.Exists("./ARKG-Holdings.csv"), Is.False);
+        File.Delete("./ARKK-Holdings-new.csv");
+        Assert.That(File.Exists("./ARKK-Holdings-new.csv"), Is.False);
+        File.Delete("./ARKG-Holdings-new.csv");
+        Assert.That(File.Exists("./ARKG-Holdings-new.csv"), Is.False);
     }
 }
