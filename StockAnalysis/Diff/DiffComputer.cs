@@ -27,9 +27,13 @@ public static class DiffComputer
 {
     public static List<DiffData> CreateDiff(string path)
     {
+        var oldFile = Path.GetDirectoryName(path) + Path.DirectorySeparatorChar +
+                      Path.GetFileNameWithoutExtension(path) + "-old" + Path.GetExtension(path);
+        var newFile = Path.GetDirectoryName(path) + Path.DirectorySeparatorChar +
+                      Path.GetFileNameWithoutExtension(path) + "-new" + Path.GetExtension(path);
         // Load old.csv and new.csv
-        List<FundData> oldData = LoadData(path + Path.DirectorySeparatorChar +"old.csv");
-        List<FundData> newData = LoadData(path + Path.DirectorySeparatorChar + "new.csv");
+        List<FundData> oldData = LoadData(oldFile);
+        List<FundData> newData = LoadData(newFile);
 
         // Compute changes
         var changes = ComputeChanges(oldData, newData);
