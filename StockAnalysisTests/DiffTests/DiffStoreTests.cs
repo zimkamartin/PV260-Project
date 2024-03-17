@@ -1,4 +1,5 @@
-﻿using StockAnalysis.Diff;
+﻿using NUnit.Framework.Internal;
+using StockAnalysis.Diff;
 
 namespace StockAnalysisTests.DiffTests;
 
@@ -22,7 +23,7 @@ public class DiffStoreTests
     [Test]
     public async Task StoreDiff_shouldReturnTrue()
     {
-        List<DiffData> data = DiffComputer.CreateDiff(_projectRoot);
+        List<DiffData> data = DiffComputer.CreateDiff(Path.Combine(_projectRoot, "test.csv"));
         bool result = await DiffStore.StoreDiff(data, _projectRoot, "diff");
         Assert.IsTrue(result);
     }
