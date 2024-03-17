@@ -68,7 +68,6 @@ public class DiffComputer
                 var sharesChange = StringToNumber(newDataEntry.Shares) - StringToNumber(oldDataEntry.Shares);
                 var marketValueChange =
                     StringToNumber(newDataEntry.MarketValue) - StringToNumber(oldDataEntry.MarketValue);
-                var weightChange = StringToNumber(newDataEntry.Weight) - StringToNumber(oldDataEntry.Weight);
 
                 changes.Add(new DiffData
                 {
@@ -76,7 +75,7 @@ public class DiffComputer
                     Ticker = newDataEntry.Ticker,
                     SharesChange = sharesChange,
                     MarketValueChange = marketValueChange,
-                    Weight = weightChange,
+                    Weight = StringToNumber(newDataEntry.Weight),
                     NewEntry = false
                 });
             }
