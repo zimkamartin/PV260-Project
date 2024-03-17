@@ -14,11 +14,12 @@ public class DownloadManager
 
     /// <summary>
     /// Orchestrates the download process for a group of holdings. The format of storage is a .csv.
+    /// It is virtual because it is meant to be overridden in tests.
     /// </summary>
     /// <param name="holdings">Information about the desired holdings - used for download and file storage names.</param>
     /// <param name="client">HttpClient used to make the download requests. This method does not modify the client. The client may need to have the default request header for "User-Agent" set to "Other" for the download to work!</param>
     /// <returns>Boolean value determining whether the whole process succeeded. Note - it may happen that some files are successfully stored before a failure occurs. The method stops at the first failure.</returns>
-    public async Task<bool> DownloadHoldingsCsv(IEnumerable<HoldingInformation> holdings, HttpClient client)
+    public virtual async Task<bool> DownloadHoldingsCsv(IEnumerable<HoldingInformation> holdings, HttpClient client)
     {
         try
         {
