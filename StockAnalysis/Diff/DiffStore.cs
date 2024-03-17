@@ -4,6 +4,7 @@ namespace StockAnalysis.Diff;
 
 public static class DiffStore
 {
+    private const string Separator = ";";
     public static async Task<bool> StoreDiff(List<DiffData> data, String path, String name)
     {
         //divide data to new, old, new entries
@@ -17,13 +18,13 @@ public static class DiffStore
         var finalPath = Path.Combine(path, name + ".csv");
         try
         {
-            await using var fileStream = File.Create(finalPath);
+            await using var fileWriter = new StreamWriter(finalPath);
             {
-                WriteDiffPositions(fileStream, newEntries, "New", "");
-                WriteDiffPositions(fileStream, oldEntriesPositive, "Increased", " up%");
-                WriteDiffPositions(fileStream, oldEntriesNegative, "Reduced", " down%");
+                await fileWriter.WriteAsync("sep=" + Separator + "\n");
+                WriteDiffPositions(fileWriter, newEntries, "New", "");
+                WriteDiffPositions(fileWriter, oldEntriesPositive, "Increased", " up%");
+                WriteDiffPositions(fileWriter, oldEntriesNegative, "Reduced", " down%");
             }
-            fileStream.Close();
             return true;
         }
         catch (Exception e) when (e is DirectoryNotFoundException
@@ -34,14 +35,13 @@ public static class DiffStore
         }
     }
 
-    private static void WriteDiffPositions(FileStream fileStream, List<DiffData> entries, string which, string sharesFormat)
+    private static async void WriteDiffPositions(StreamWriter fileWriter, List<DiffData> entries, string which, string sharesFormat)
     {
-        byte[] info = new UTF8Encoding(true).GetBytes(which + " positions:;;;\nCompany name;ticker;#shares" + sharesFormat + ";weight(%)\n");
-        fileStream.Write(info, 0, info.Length);
+        await fileWriter.WriteAsync(which + " positions:" + Separator + Separator + Separator + "\nCompany name" + 
+                         Separator + "ticker" + Separator + "#shares" + sharesFormat + Separator + "weight(%)\n");
         foreach (var entry in entries)
         {
-            info = new UTF8Encoding(true).GetBytes(entry.Company + ";" + entry.Ticker + ";" + entry.SharesChange + ";" + entry.Weight + "\n");
-            fileStream.Write(info, 0, info.Length);
+            await fileWriter.WriteAsync(entry.Company + Separator + entry.Ticker + Separator + entry.SharesChange + Separator + entry.Weight + "\n");
         }
     }
 }

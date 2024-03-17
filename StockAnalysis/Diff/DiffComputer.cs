@@ -1,6 +1,7 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration.Attributes;
 using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace StockAnalysis.Diff;
 
@@ -37,8 +38,7 @@ public static class DiffComputer
 
         // Compute changes
         var changes = ComputeChanges(oldData, newData);
-
-        //save new diff, name set as diff for now
+        
         return changes;
     }
 
@@ -92,9 +92,7 @@ public static class DiffComputer
 
     private static double StringToNumber(string data)
     {
-        data = data.Replace(",", "");
-        data = data.Replace("$", "");
-        data = data.Replace("%", "");
+        data = Regex.Replace(data, @"[,$%]", "");
         return double.Parse(data, CultureInfo.InvariantCulture);
     }
 }
