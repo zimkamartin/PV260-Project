@@ -7,6 +7,7 @@ public static class Sender
     public static async Task SendMail(List<string> mailAddresses, string attachmentPath)
     {
         const string fromMail = "pv260.s24.goth.pinkteam@gmail.com";
+        // App password.
         var fromPassword = Environment.GetEnvironmentVariable("PV260-email-password") ?? "password";  // TODO: do it using .env file
         
         var message = new MailMessage();
