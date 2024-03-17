@@ -39,18 +39,20 @@ namespace StockAnalysisConsole
                     return;
                 }
                 Console.WriteLine("ETF Holdings downloaded.");
-                
+
+                var attachmentsPaths = new List<string>();
                 foreach ( var holding in holdings )
                 {
                     var data = DiffComputer.CreateDiff(Path.Combine(projectRoot, "Downloads", holding.Name + ".csv"));
                     var storePath = Path.Combine(projectRoot, "Diff");
                     await DiffStore.StoreDiff(data, storePath, holding.Name);
                     var filePath = Path.Combine(storePath, holding.Name + ".csv");
-                    Console.WriteLine("ETF diff stored at: " + filePath );
-                    Console.WriteLine("Sending emails.");
-                    await Sender.SendMail(addresses, filePath);
-                    Console.WriteLine("Emails sent.");
+                    Console.WriteLine("ETF diff stored at: " + filePath);
+                    attachmentsPaths.Add(filePath);
                 }
+                Console.WriteLine("Sending emails.");
+                await Sender.SendMail(addresses, attachmentsPaths);
+                Console.WriteLine("Emails sent.");
                 
                 Console.WriteLine("Analysis finished.");
                 return;
