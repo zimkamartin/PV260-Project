@@ -4,11 +4,11 @@ namespace StockAnalysis.SendEmail;
 
 public static class Sender
 {
-    public static async Task SendMail(List<string> mailAddresses, string attachmentPath)
+    public static async Task SendMail(List<string> mailAddresses, List<string> attachmentPaths)
     {
         const string fromMail = "pv260.s24.goth.pinkteam@gmail.com";
         // App password.
-        var fromPassword = Environment.GetEnvironmentVariable("PV260-email-password") ?? "password";  // TODO: do it using .env file
+        var fromPassword = Environment.GetEnvironmentVariable("PV260_EMAIL_PASSWORD") ?? "password";
         
         var message = new MailMessage();
         message.From = new MailAddress(fromMail);
@@ -20,7 +20,10 @@ public static class Sender
         message.Body = "Good morning Madam/Sir,\nHere is your monthly diff.\n\nHave a nice day!\nSincerely Pink team";
         try
         {
-            message.Attachments.Add(new Attachment(attachmentPath));
+            foreach (var ap in attachmentPaths)
+            {
+                message.Attachments.Add(new Attachment(ap));
+            }
         }
         catch (Exception e)
         {
