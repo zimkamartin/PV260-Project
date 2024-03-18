@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace StockAnalysis.Diff;
 
+// FIXME: Move to separate file. File name = class name
 public class FundData
 {
     [Name("date")] public DateTime Date { get; set; }
@@ -28,13 +29,15 @@ public static class DiffComputer
 {
     public static List<DiffData> CreateDiff(string path)
     {
+        // FIXME: constants "-old" and "-new"
         var oldFile = Path.GetDirectoryName(path) + Path.DirectorySeparatorChar +
                       Path.GetFileNameWithoutExtension(path) + "-old" + Path.GetExtension(path);
         var newFile = Path.GetDirectoryName(path) + Path.DirectorySeparatorChar +
                       Path.GetFileNameWithoutExtension(path) + "-new" + Path.GetExtension(path);
         // Load old.csv and new.csv
-        List<FundData> oldData = LoadData(oldFile);
-        List<FundData> newData = LoadData(newFile);
+        // FIXME: Throws exception if file does not exist
+        var oldData = LoadData(oldFile);
+        var newData = LoadData(newFile);
 
         // Compute changes
         var changes = ComputeChanges(oldData, newData);
