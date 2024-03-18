@@ -11,7 +11,9 @@ namespace StockAnalysisConsole
     {
         public static async Task Main()
         {
-            var addresses = new List<string>(){ "514369@mail.muni.cz" };
+            // TODO: Option to set the email addresses.
+            
+            var addresses = new List<string>(){ "514182@mail.muni.cz" };
             Console.WriteLine("Starting analyzer. ");
             var current = Environment.CurrentDirectory;
             var projectDirectory = Directory.GetParent(current);
@@ -28,6 +30,7 @@ namespace StockAnalysisConsole
             DownloadManager manager = new(Path.Combine(projectRoot, "Downloads"));
             var holdings = await config.LoadConfiguration();
             
+            // TODO: Option to choose the period.
             Console.WriteLine("Would you like to set up the periodic downloader for 1 month? y/n");
             var res = Console.ReadKey(true);
             if (res.KeyChar != 'y')
@@ -45,6 +48,8 @@ namespace StockAnalysisConsole
                 {
                     var data = DiffComputer.CreateDiff(Path.Combine(projectRoot, "Downloads", holding.Name + ".csv"));
                     var storePath = Path.Combine(projectRoot, "Diff");
+                    Directory.CreateDirectory(storePath);
+                    
                     await DiffStore.StoreDiff(data, storePath, holding.Name);
                     var filePath = Path.Combine(storePath, holding.Name + ".csv");
                     Console.WriteLine("ETF diff stored at: " + filePath);

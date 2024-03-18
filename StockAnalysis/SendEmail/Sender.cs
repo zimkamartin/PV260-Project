@@ -4,6 +4,8 @@ namespace StockAnalysis.SendEmail;
 
 public static class Sender
 {
+    // FIXME: rename to SendNotification - so it is more general in the future
+    // or define it in interfaces.
     public static async Task SendMail(List<string> mailAddresses, List<string> attachmentPaths)
     {
         const string fromMail = "pv260.s24.goth.pinkteam@gmail.com";
