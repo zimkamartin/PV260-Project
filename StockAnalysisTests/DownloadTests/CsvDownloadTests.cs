@@ -1,8 +1,9 @@
 using StockAnalysis.Download;
+using StockAnalysis.Download.Getter;
 
 namespace StockAnalysisTests.DownloadTests;
 
-public class DownloadTests
+public class CsvDownloadTests
 {
     [Test]
     public async Task Download_GetCsv_Succeeds()
@@ -10,16 +11,18 @@ public class DownloadTests
         // Arrange
         // It might be better to mock a simple rest API service instead of sending requests to ark-funds.
         // Will improve this if I get the time.
-        var uri = "https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv";
+        const string uri = "https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv";
         using var client = new HttpClient();
         
         // This is necessary, otherwise the website will reject our request.
         client.DefaultRequestHeaders.Add("User-Agent", "Other");
 
+        var downloader = new CsvDownload();
+
         try
         {
             // Act
-            await using var resultStream = await Download.GetCsv(uri, client);
+            await using var resultStream = await downloader.Get(uri, client);
             
             // Assert
             // There is some data in the stream.

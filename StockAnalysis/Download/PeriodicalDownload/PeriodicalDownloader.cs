@@ -89,7 +89,7 @@ public class PeriodicalDownloader
     {
         var current = _dateTimeProvider.UtcNow();
         // TODO: Is async callback OK?
-        var timer = new Timer(x => _downloadManager.DownloadHoldingsCsv(_holdings, _client), null,
+        var timer = new Timer(x => _downloadManager.GetHoldings(_holdings, _client), null,
             _period.TimeToGo(current), _period.Interval);
         // TODO: Is there need to dispose the timer later?
         return timer;

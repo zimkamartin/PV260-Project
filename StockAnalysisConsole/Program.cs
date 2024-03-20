@@ -1,6 +1,8 @@
 ﻿using StockAnalysis.Diff;
 using StockAnalysis.Download;
+using StockAnalysis.Download.Getter;
 using StockAnalysis.Download.PeriodicalDownload;
+using StockAnalysis.Download.Store;
 using StockAnalysis.HoldingsConfig;
 using StockAnalysis.SendEmail;
 using StockAnalysis.Utilities;
@@ -25,7 +27,7 @@ namespace StockAnalysisConsole
             using var client = new HttpClient();
             client.DefaultRequestHeaders.Add("User-Agent", "Other");
             
-            DownloadManager manager = new(Path.Combine(projectRoot, "Downloads"));
+            DownloadManager manager = new(Path.Combine(projectRoot, "Downloads"), new CsvDownload(), new CsvStorage());
             var holdings = await config.LoadConfiguration();
             
             Console.WriteLine("Would you like to set up the periodic downloader for 1 month? y/n");
@@ -33,7 +35,7 @@ namespace StockAnalysisConsole
             if (res.KeyChar != 'y')
             {
                 Console.WriteLine("Performing a single aperiodic run of analysis.");
-                if (!await manager.DownloadHoldingsCsv(holdings, client))
+                if (!await manager.GetHoldings(holdings, client))
                 {
                     Console.WriteLine("Failed to download the required files.");
                     return;
@@ -64,7 +66,6 @@ namespace StockAnalysisConsole
             var downloader = new PeriodicalDownloader(manager, period, new SystemDateTime(), holdings, client);
             downloader.SchedulePeriodicDownload();
             Console.WriteLine("Download scheduled.");
-
         }
     }
 }

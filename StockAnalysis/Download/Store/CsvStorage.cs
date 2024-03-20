@@ -1,24 +1,31 @@
-namespace StockAnalysis.Download;
+namespace StockAnalysis.Download.Store;
 
-public static class Storage
+public class CsvStorage : IStore
 {
     /// <summary>
     /// Stores data within a stream into the filesystem, combining path and name to form a file.
     /// </summary>
-    /// <param name="stream">A stream that will be completely stored into a file. This function DOES NOT close the stream.</param>
-    /// <param name="path">The path to where the stream contents should be stored.</param>
-    /// <param name="name">The desired name of the file that will be created.</param>
+    /// <param name="stream">A stream that will be written into the filesystem.</param>
+    /// <param name="path">The path to where in the filesystem the stream should be stored.</param>
+    /// <param name="fileName">The name of the file under which the stream will be stored, must not include a file extension.</param>
     /// <returns>Value indicating whether the write succeeded.</returns>
     /// <exception cref="ObjectDisposedException">The stream was closed prematurely.</exception>
     /// <exception cref="PathTooLongException">The path is too long.</exception>
     /// <exception cref="UnauthorizedAccessException">The file could not be created.</exception>
-    public static async Task<bool> WriteToFileSystem(Stream stream, string path, string name)
+    public async Task<bool> Store(Stream stream, string path, string fileName)
     {
         if (stream is { CanRead: false, CanSeek: false })
         {
             return false;
         }
-        var finalPath = Path.Combine(path, name);
+        
+        // Idea for storage:
+        // root/default/default.csv -> default file, empty.
+        // root/07022022/holding.csv -> older file
+        // root/14022022/holding.csv -> current file, we check if there is an older file by checking date - period
+        var finalPath = Path.Combine(path, 
+                                          fileName + Constants.Constants.NewSuffix 
+                                               + Constants.Constants.CsvExtension);
         try
         {
             stream.Seek(0, SeekOrigin.Begin);
@@ -46,21 +53,21 @@ public static class Storage
         stream.Seek(0, SeekOrigin.Begin);
         using var reader = new StreamReader(stream);
         long offset = 0;
-        long prev_line_len = 0;
-        string? line = "";
+        long prevLineLen = 0;
+        var line = "";
         while (line != null)
         {
             offset += line.Length + 1;
             line = reader.ReadLine();
             if (line != null)
             {
-                prev_line_len = line.Length + 1;
+                prevLineLen = line.Length + 1;
             }
         }
 
-        if (offset - prev_line_len - 1 > 0)
+        if (offset - prevLineLen - 1 > 0)
         {
-            stream.SetLength(offset - prev_line_len - 1);
+            stream.SetLength(offset - prevLineLen - 1);
         }
     }
 }

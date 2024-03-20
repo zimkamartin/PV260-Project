@@ -1,6 +1,6 @@
-namespace StockAnalysis.Download;
+namespace StockAnalysis.Download.Getter;
 
-public static class Download
+public class CsvDownload : IGetter
 {
     /// <summary>
     /// Downloads a csv file from the provided uri.
@@ -12,7 +12,7 @@ public static class Download
     /// <exception cref="InvalidOperationException">An error occured with the sending of the request.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
     /// <exception cref="TaskCanceledException">Failure due to timeout.</exception>
-    public static async Task<Stream> GetCsv(string uri, HttpClient client)
+    public async Task<Stream> Get(string uri, HttpClient client)
     {
         try
         {
