@@ -1,4 +1,4 @@
-﻿using StockAnalysis.Constants;
+using StockAnalysis.Constants;
 using StockAnalysis.Download.Getter;
 using StockAnalysis.Download.Store;
 using StockAnalysis.Sending.ClientGenerator;

@@ -24,7 +24,7 @@ public class DiffStoreTests
     public async Task StoreDiff_shouldReturnTrue()
     {
         List<DiffData> data = DiffComputer.CreateDiff(Path.Combine(_projectRoot, "test.csv"));
-        bool result = await DiffStore.StoreDiff(data, _projectRoot, "diff");
+        bool result = await DiffStore.StoreDiffToCsv(data, _projectRoot, "test_diff");
         Assert.IsTrue(result);
     }
 }
