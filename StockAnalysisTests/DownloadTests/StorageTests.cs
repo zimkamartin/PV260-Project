@@ -20,12 +20,14 @@ public class StorageTests
     }
     
     [Test]
-    public async Task Storage_WriteToFileSystem_WritesStreamToTextFile()
+    public async Task CsvStorage_WriteToFileSystem_WritesStreamToTextFile()
     {
         // Arrange
+        const string directory = "storage-test";
         const string fileName = "store";
         var storage = new CsvStorage();
-        var totalPath = Path.Join(_projectRoot, fileName + "-new.csv");
+        var dirPath = Path.Join(_projectRoot, directory);
+        var totalPath = Path.Join(dirPath, fileName + ".csv");
         UnicodeEncoding encoding = new();
         const string text = "This is a sample text.";
         var bytes = encoding.GetBytes(text);
@@ -33,7 +35,7 @@ public class StorageTests
         
         // Act
         // Not checking for exceptions as they are not meant to be thrown here.
-        await storage.Store(memoryStream, _projectRoot!, fileName);
+        await storage.Store(memoryStream, _projectRoot!,  directory, fileName);
         var actualBytes = await File.ReadAllBytesAsync(totalPath);
         
         // Assert
@@ -45,6 +47,6 @@ public class StorageTests
 
         // Cleanup.
         File.Delete(totalPath);
-        Assert.That(File.Exists(totalPath), Is.False);
+        Directory.Delete(dirPath);
     }
 }

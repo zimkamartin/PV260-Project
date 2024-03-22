@@ -28,7 +28,7 @@ public class PeriodicalDownloaderTest
         using var client = new HttpClient();
         
         var downloaderManagerMock = new Mock<DownloadManager>(".", new CsvDownload(), new CsvStorage());
-        downloaderManagerMock.Setup(x => x.GetHoldings(holdings, client)).ReturnsAsync(true);
+        downloaderManagerMock.Setup(x => x.GetHoldings(holdings, client, ".")).ReturnsAsync(true);
 
         var start = new DateTime(2024, 3, 10);
         const int count = 3;
@@ -49,7 +49,7 @@ public class PeriodicalDownloaderTest
         timer.Dispose();
 
         // Assert
-        downloaderManagerMock.Verify(x => x.GetHoldings(holdings, client), Times.AtLeast(count));
+        downloaderManagerMock.Verify(x => x.GetHoldings(holdings, client, "."), Times.AtLeast(count));
         // periodicalDownloaderMock.Verify(x => x.Downloader.GetData(), Times.Exactly(count));
     }
 }
