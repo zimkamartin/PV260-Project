@@ -38,7 +38,8 @@ namespace StockAnalysisConsole
             if (res.KeyChar != 'y')
             {
                 Console.WriteLine("Performing a single aperiodic run of analysis.");
-                if (!await manager.GetHoldings(holdings, client))
+                var directory = DateManipulator.GetFolderName(DateOnly.FromDateTime(DateTime.UtcNow));
+                if (!await manager.GetHoldings(holdings, client, directory))
                 {
                     Console.WriteLine("Failed to download the required files.");
                     return;
