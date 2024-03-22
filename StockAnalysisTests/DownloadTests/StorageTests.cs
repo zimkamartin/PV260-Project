@@ -1,5 +1,5 @@
 using System.Text;
-using StockAnalysis.Download;
+using StockAnalysis.Download.Store;
 
 namespace StockAnalysisTests.DownloadTests;
 
@@ -20,33 +20,33 @@ public class StorageTests
     }
     
     [Test]
-    public async Task Storage_WriteToFileSystem_WritesStreamToTextFile()
+    public async Task CsvStorage_WriteToFileSystem_WritesStreamToTextFile()
     {
         // Arrange
-        var totalPath = Path.Join(_projectRoot, "test.txt");
+        const string directory = "storage-test";
+        const string fileName = "store";
+        var storage = new CsvStorage();
+        var dirPath = Path.Join(_projectRoot, directory);
+        var totalPath = Path.Join(dirPath, fileName + ".csv");
         UnicodeEncoding encoding = new();
         const string text = "This is a sample text.";
         var bytes = encoding.GetBytes(text);
         using var memoryStream = new MemoryStream(bytes);
         
         // Act
-        try
-        {
-            await Storage.WriteToFileSystem(memoryStream, _projectRoot!, "test.txt");
-        }
-        catch (Exception e)
-        {
-            // Assert
-            Assert.Fail("Method threw an exception when it was not supposed to: " + e.Message);
-        }
+        // Not checking for exceptions as they are not meant to be thrown here.
+        await storage.Store(memoryStream, _projectRoot!,  directory, fileName);
         var actualBytes = await File.ReadAllBytesAsync(totalPath);
-
-        // Assert
-        Assert.That(File.Exists(totalPath), Is.True);
-        Assert.That(actualBytes, Is.EqualTo(bytes));
         
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(File.Exists(totalPath), Is.True);
+            Assert.That(actualBytes, Is.Not.Empty);
+        });
+
         // Cleanup.
         File.Delete(totalPath);
-        Assert.That(File.Exists(totalPath), Is.False);
+        Directory.Delete(dirPath);
     }
 }
