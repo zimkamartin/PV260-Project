@@ -57,20 +57,15 @@ public class CsvStorage : IStore
         using var reader = new StreamReader(stream);
         long offset = 0;
         long prevLineLen = 0;
-        var line = "";
-        while (line != null)
+        while (reader.ReadLine() is { } line)
         {
-            offset += line.Length + 1;
-            line = reader.ReadLine();
-            if (line != null)
-            {
-                prevLineLen = line.Length + 1;
-            }
+            offset += prevLineLen;
+            prevLineLen = line.Length + 1;
         }
-
-        if (offset - prevLineLen - 1 > 0)
+        
+        if (offset > 0)
         {
-            stream.SetLength(offset - prevLineLen - 1);
+            stream.SetLength(offset);
         }
     }
 }
