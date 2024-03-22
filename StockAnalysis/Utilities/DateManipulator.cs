@@ -11,7 +11,7 @@ public static class DateManipulator
     /// <returns>A string representing the folder's name.</returns>
     public static string GetFolderName(DateOnly date)
     {
-        return date.ToString();
+        return date.ToString().Replace("/", string.Empty);
     }
 
     /// <summary>
@@ -23,13 +23,15 @@ public static class DateManipulator
     /// <returns>A folder name corresponding to the date shifted by step * period.</returns>
     public static string GetFolderName(DateOnly date, int step, PeriodType periodType)
     {
-        return periodType switch
+        var resultDate = periodType switch
         {
-            PeriodType.Daily => date.AddDays(step).ToString(),
-            PeriodType.Monthly => date.AddMonths(step).ToString(),
-            PeriodType.Quarterly => date.AddMonths(step * 4).ToString(),
-            PeriodType.Weekly => date.AddDays(7 * step).ToString(),
-            _ => date.ToString()
+            PeriodType.Daily => date.AddDays(step),
+            PeriodType.Monthly => date.AddMonths(step),
+            PeriodType.Quarterly => date.AddMonths(step * 3),
+            PeriodType.Weekly => date.AddDays(7 * step),
+            _ => date,
         };
+        
+        return resultDate.ToString().Replace("/", string.Empty);
     }
 }
