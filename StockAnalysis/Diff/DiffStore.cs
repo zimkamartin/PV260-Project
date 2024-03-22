@@ -1,11 +1,10 @@
 ﻿using System.Text;
+using Const = StockAnalysis.Constants.Constants;
 
 namespace StockAnalysis.Diff;
 
 public class DiffStore : IDiffStore
 {
-    private const string Separator = ";";
-
     public static async Task<bool> StoreDiffToCsv(List<DiffData> data, String path, String name)
     {
         //divide data to new, old, new entries
@@ -15,7 +14,7 @@ public class DiffStore : IDiffStore
 
         //change shares to absolute number - would be negative - comment if not wanted
         oldEntriesNegative.ForEach(a => a.SharesChange = double.Abs(a.SharesChange));
-        
+
         var finalPath = Path.Combine(path, name + ".csv");
         //TODO check path format?
         try
@@ -23,10 +22,10 @@ public class DiffStore : IDiffStore
             await using var fileWriter = new StreamWriter(finalPath);
             {
                 //set separator in csv for it to be readable
-                await fileWriter.WriteAsync("sep=" + Separator + "\n");
+                await fileWriter.WriteAsync("sep=" + Const.CsvSeparator + "\n");
                 WriteDiffPositions(fileWriter, newEntries, "New", "");
-                WriteDiffPositions(fileWriter, oldEntriesPositive, "Increased", " up%");
-                WriteDiffPositions(fileWriter, oldEntriesNegative, "Reduced", " down%");
+                WriteDiffPositions(fileWriter, oldEntriesPositive, "Increased", Const.CsvSharesUpIndicator);
+                WriteDiffPositions(fileWriter, oldEntriesNegative, "Reduced", Const.CsvSharesDownIndicator);
             }
             return true;
         }
@@ -35,6 +34,10 @@ public class DiffStore : IDiffStore
                                       or InvalidOperationException)
         {
             return false;
+        }
+        finally
+        {
+            oldEntriesNegative.ForEach(a => a.SharesChange = -a.SharesChange);
         }
     }
 
@@ -50,14 +53,14 @@ public class DiffStore : IDiffStore
 
     private static string CreateCsvLine(DiffData entry)
     {
-        return entry.Company + Separator + entry.Ticker + Separator + entry.SharesChange +
-               Separator + entry.Weight + "\n";
+        return entry.Company + Const.CsvSeparator + entry.Ticker + Const.CsvSeparator + entry.SharesChange +
+               Const.CsvSeparator + entry.Weight + "\n";
     }
 
     private static string CreateCsvHeader(string type, string sharesFormat)
     {
-        return type + " positions:" + Separator + Separator + Separator + "\nCompany name" +
-               Separator + "ticker" + Separator + "#shares" + sharesFormat + Separator +
+        return type + " positions:" + Const.CsvSeparator + Const.CsvSeparator + Const.CsvSeparator + "\nCompany name" +
+               Const.CsvSeparator + "ticker" + Const.CsvSeparator + "#shares" + sharesFormat + Const.CsvSeparator +
                "weight(%)\n";
     }
 }
