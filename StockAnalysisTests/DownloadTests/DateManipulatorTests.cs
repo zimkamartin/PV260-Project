@@ -90,4 +90,23 @@ public class DateManipulatorTests
         // Assert
         Assert.That(actual, Is.EqualTo(expected));
     }
+
+    [TestCase(2020, 05, 01, 1, 2, "03052020" )]
+    [TestCase(2020, 05, 01, 1, 3, "04052020" )]
+    [TestCase(2020, 05, 01, 2, 2, "05052020" )]
+    [TestCase(2020, 05, 01, -1, 2, "29042020" )]
+    [TestCase(2020, 01, 01, -1, 2, "30122019" )]
+    public void GetFolderName_CustomPeriod(int year, int month, int day, int step, int spanDays, string expected)
+    {
+        // Arrange
+        var span = new TimeSpan(spanDays, 0, 0, 0);
+        var period = new Period(DateTime.Now, span);
+        var date = DateOnly.FromDateTime(new DateTime(year, month, day));
+        
+        // Act
+        var actual = DateManipulator.GetFolderName(date, step, period);
+        
+        // Assert
+        Assert.That(actual, Is.EqualTo(expected));
+    }
 }
