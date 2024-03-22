@@ -11,7 +11,7 @@ public static class DateManipulator
     /// <returns>A string representing the folder's name.</returns>
     public static string GetFolderName(DateOnly date)
     {
-        return date.ToString().Replace("/", string.Empty);
+        return date.ToString(Constants.Constants.DateFolderNameFormat);
     }
 
     /// <summary>
@@ -32,6 +32,6 @@ public static class DateManipulator
             _ => date,
         };
         
-        return resultDate.ToString().Replace("/", string.Empty);
+        return resultDate.ToString(Constants.Constants.DateFolderNameFormat);
     }
 }
