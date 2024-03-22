@@ -96,6 +96,8 @@ public class DateManipulatorTests
     [TestCase(2020, 05, 01, 2, 2, "05052020" )]
     [TestCase(2020, 05, 01, -1, 2, "29042020" )]
     [TestCase(2020, 01, 01, -1, 2, "30122019" )]
+    [TestCase(2020, 04, 15, 1, 7, "22042020")]
+    [TestCase(2021, 12, 31, 1,1,"01012022")]
     public void GetFolderName_CustomPeriod(int year, int month, int day, int step, int spanDays, string expected)
     {
         // Arrange
