@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockAnalysis", "StockAnalysis\StockAnalysis.csproj", "{D921593F-54B5-47B6-87A4-95085C0D4BA5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockAnalysisTests", "StockAnalysisTests\StockAnalysisTests.csproj", "{0BB2A339-0600-4239-8EE5-9CD5F9200C9A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockAnalysis.Tests", "StockAnalysis.Tests\StockAnalysis.Tests.csproj", "{0BB2A339-0600-4239-8EE5-9CD5F9200C9A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockAnalysisConsole", "StockAnalysisConsole\StockAnalysisConsole.csproj", "{C77DAFB3-FE55-4DE8-BC60-A1E60DE298EA}"
 EndProject

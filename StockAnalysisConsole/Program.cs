@@ -1,11 +1,6 @@
-﻿using StockAnalysis.Diff;
-using StockAnalysis.Download;
+﻿using StockAnalysis.Constants;
 using StockAnalysis.Download.Getter;
-using StockAnalysis.Download.PeriodicalDownload;
 using StockAnalysis.Download.Store;
-using StockAnalysis.HoldingsConfig;
-using StockAnalysis.SendEmail;
-using StockAnalysis.Utilities;
 
 namespace StockAnalysisConsole
 {
@@ -14,63 +9,29 @@ namespace StockAnalysisConsole
         public static async Task Main()
         {
             // TODO: Option to set the email addresses.
-            
             var addresses = new List<string>(){ "514182@mail.muni.cz" };
+            
             Console.WriteLine("Starting analyzer. ");
-            var current = Environment.CurrentDirectory;
-            var projectDirectory = Directory.GetParent(current);
-            var projectRoot = current;
-            if (projectDirectory is not null)
-            {
-                projectRoot = projectDirectory.Parent!.Parent!.FullName;
-            }
-
-            var config = new Configuration(Path.Combine(projectRoot, "Config", "Configuration.json"));
+            
+            var manager = new AnalysisManager(new CsvDownload(), new CsvStorage());
+            
             using var client = new HttpClient();
             client.DefaultRequestHeaders.Add("User-Agent", "Other");
-            
-            DownloadManager manager = new(Path.Combine(projectRoot, "Downloads"), new CsvDownload(), new CsvStorage());
-            var holdings = await config.LoadConfiguration();
             
             // TODO: Option to choose the period.
             Console.WriteLine("Would you like to set up the periodic downloader for 1 month? y/n");
             var res = Console.ReadKey(true);
             if (res.KeyChar != 'y')
             {
-                Console.WriteLine("Performing a single aperiodic run of analysis.");
-                var directory = DateManipulator.GetFolderName(DateOnly.FromDateTime(DateTime.UtcNow));
-                if (!await manager.GetHoldings(holdings, client, directory))
-                {
-                    Console.WriteLine("Failed to download the required files.");
-                    return;
-                }
-                Console.WriteLine("ETF Holdings downloaded.");
-
-                var attachmentsPaths = new List<string>();
-                foreach ( var holding in holdings )
-                {
-                    var data = DiffComputer.CreateDiff(Path.Combine(projectRoot, "Downloads", holding.Name + ".csv"));
-                    var storePath = Path.Combine(projectRoot, "Diff");
-                    Directory.CreateDirectory(storePath);
-                    
-                    await DiffStore.StoreDiff(data, storePath, holding.Name);
-                    var filePath = Path.Combine(storePath, holding.Name + ".csv");
-                    Console.WriteLine("ETF diff stored at: " + filePath);
-                    attachmentsPaths.Add(filePath);
-                }
-                Console.WriteLine("Sending emails.");
-                await Sender.SendMail(addresses, attachmentsPaths);
-                Console.WriteLine("Emails sent.");
-                
-                Console.WriteLine("Analysis finished.");
+                await manager.PerformAnalysis(client, Constants.CsvExtension, addresses);
                 return;
             }
             
             Console.WriteLine("Setting up a periodic analysis.");
             // Note: This will just end the program right now. Setting this up to run forever and hosting it on some server is necessary.
-            var period = new Period(PeriodType.Monthly, DateTime.Today);
-            var downloader = new PeriodicalDownloader(manager, period, new SystemDateTime(), holdings, client);
-            downloader.SchedulePeriodicDownload();
+            // var period = new Period(PeriodType.Monthly, DateTime.Today);
+            // var downloader = new PeriodicalDownloader(manager, period, new SystemDateTime(), holdings, client);
+            // downloader.SchedulePeriodicDownload();
             Console.WriteLine("Download scheduled.");
         }
     }
