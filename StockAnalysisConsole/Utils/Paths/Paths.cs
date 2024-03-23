@@ -7,7 +7,8 @@ public static class Paths
     private const string DownloadFolder = "Downloads";
     private const string DiffFolder = "Diff";
     private const string EmailsFile = "Emails.json";
-    public static string GetProjectRoot()
+
+    private static string GetProjectRoot()
     {
         var current = Environment.CurrentDirectory;
         var projectDirectory = Directory.GetParent(current);
