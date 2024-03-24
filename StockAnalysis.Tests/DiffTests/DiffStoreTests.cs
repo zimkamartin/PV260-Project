@@ -17,7 +17,7 @@ public class DiffStoreTests
         _testdataRoot = current;
         if (projectDirectory is not null)
         {
-            _testdataRoot = Path.Combine(projectDirectory.Parent!.Parent!.FullName, "testdata");
+            _testdataRoot = Path.Combine(projectDirectory.Parent!.Parent!.FullName, "TestData");
         }
     }
 
