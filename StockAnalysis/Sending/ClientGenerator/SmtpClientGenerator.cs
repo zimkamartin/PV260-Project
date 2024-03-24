@@ -17,7 +17,7 @@ public class SmtpClientGenerator : ISmtpClientGenerator
         _ssl = allowSsl;
         _clientHost = clientHost;
     }
-    
+
     public IClient GenerateClient()
     {
         var client = new SmtpClientWrapper();

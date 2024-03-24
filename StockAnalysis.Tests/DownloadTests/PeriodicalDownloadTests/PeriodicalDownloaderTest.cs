@@ -1,10 +1,12 @@
 using Moq;
+using StockAnalysis.Constants;
 using StockAnalysis.Download;
 using StockAnalysis.Download.Getter;
 using StockAnalysis.Download.PeriodicalDownload;
 using StockAnalysis.Download.Store;
 using StockAnalysis.HoldingsConfig;
 using StockAnalysis.Utilities;
+using StockAnalysisConsole;
 
 namespace StockAnalysisTests.DownloadTests.PeriodicalDownloadTests;
 
@@ -26,30 +28,32 @@ public class PeriodicalDownloaderTest
                 "https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv")
         };
         using var client = new HttpClient();
-        
-        var downloaderManagerMock = new Mock<DownloadManager>(".", new CsvDownload(), new CsvStorage());
-        downloaderManagerMock.Setup(x => x.GetHoldings(holdings, client, ".")).ReturnsAsync(true);
+        var extension = Constants.CsvExtension;
 
         var start = new DateTime(2024, 3, 10);
         const int count = 3;
         var interval = TimeSpan.FromSeconds(1);
         var period = new Period(start, interval);
 
+        var analysisManagerMock = new Mock<AnalysisManager>(new CsvDownload(), new CsvStorage());
+        analysisManagerMock.Setup(x => x.PerformAnalysis(client, extension, period)).ReturnsAsync(new List<string>());
+
         var dateTimeProviderMock = new Mock<IDateTimeProvider>();
         dateTimeProviderMock.Setup(x => x.UtcNow()).Returns(start);
 
         var periodicalDownloaderMock =
-            new Mock<PeriodicalDownloader>(downloaderManagerMock.Object, period, dateTimeProviderMock.Object, holdings, client);
+            new Mock<PeriodicalDownloader>(period, dateTimeProviderMock.Object, holdings, client, extension,
+                analysisManagerMock.Object.PerformAnalysis);
 
         // Act
         var timer = periodicalDownloaderMock.Object.SchedulePeriodicDownload();
+
         // Wait 
         Thread.Sleep((count + 1) * 1000);
 
         timer.Dispose();
 
         // Assert
-        downloaderManagerMock.Verify(x => x.GetHoldings(holdings, client, "."), Times.AtLeast(count));
-        // periodicalDownloaderMock.Verify(x => x.Downloader.GetData(), Times.Exactly(count));
+        analysisManagerMock.Verify(x => x.PerformAnalysis(client, extension, period), Times.AtLeast(count));
     }
 }

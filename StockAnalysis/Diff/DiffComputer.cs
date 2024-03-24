@@ -6,92 +6,122 @@ namespace StockAnalysis.Diff;
 
 public static class DiffComputer
 {
+    /// <summary>
+    /// Creates a diff between two csv files and returns the changes.
+    /// </summary>
     public static List<DiffData> CreateDiff(string newFile, string? oldFile)
     {
         string filename = Path.GetFileName(newFile);
-        
-        //if path to old diff is null or file with it does not exists, diff is computed against default one
+
+        // If path to old diff is null or file with it does not exists, diff is computed against default one
         if (oldFile == null || !(Path.Exists(oldFile)))
         {
             oldFile = Path.GetDirectoryName(Path.GetDirectoryName(newFile)) + Path.DirectorySeparatorChar +
-                                            "Default" + Path.DirectorySeparatorChar + filename;
-        }
-        
-        if (filename != Path.GetFileName(oldFile))
-        {
-            throw new ArgumentException("different files cannot be compared");
+                      "Default" + Path.DirectorySeparatorChar + filename;
         }
 
-        //try to load old/default csv, data empty if neither exists
+        if (filename != Path.GetFileName(oldFile))
+        {
+            throw new ArgumentException("Different files cannot be compared");
+        }
+
+        if (!Path.Exists(newFile))
+        {
+            throw new ArgumentException("File with new data does not exist");
+        }
+
+
+        // Try to load old/default csv, data empty if neither exists
         var oldData = new List<FundData>();
         try
         {
             oldData = LoadData(oldFile);
         }
-        catch (FileNotFoundException)
-        { //do nothing - empty list already initialized
+        // Not sure about "FileNotFoundException" - something more general?
+        // What if "Default" folder doesn't exist? 
+        catch (Exception)
+        {
+            // Do nothing - empty list already initialized
         }
 
         try
         {
-            // Load new.csv
+            // Load new data
             var newData = LoadData(newFile);
             // Compute changes
-            var changes = ComputeChanges(oldData, newData);
-            return changes;
+            return ComputeChanges(oldData, newData);
         }
-        catch (FileNotFoundException e)
+        catch (Exception)
         {
-            throw new ArgumentException("file with new data does not exist");
+            // TODO: Should it be ArgumentException?
+            throw new ArgumentException("Creating diff failed.");
         }
     }
 
+    /// <summary>
+    /// Loads data from (now) a csv file.
+    /// In the future, it could be extended to load data from other sources.
+    /// </summary>
     private static List<FundData> LoadData(string filename)
     {
         using var reader = new StreamReader(filename);
+        // TODO: We are passing .csv extension to PerformAnalysis, but here we are not checking it
         using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
         return csv.GetRecords<FundData>().ToList();
     }
 
+    /// <summary>
+    /// Computes the changes between two sets of data.
+    /// </summary>
     public static List<DiffData> ComputeChanges(List<FundData> oldData, List<FundData> newData)
     {
-        var changes = new List<DiffData>();
+        return (from newDataEntry in newData
+                let oldDataEntry = oldData.FirstOrDefault(x => x.Ticker == newDataEntry.Ticker)
+                select oldDataEntry != null ? GetNewDiffData(newDataEntry, oldDataEntry) : GetNewDiffData(newDataEntry))
+            .ToList();
+    }
 
-        foreach (var newDataEntry in newData)
+    /// <summary>
+    /// Overload for creating new diff data if there is no old data to compare with.
+    /// </summary>
+    private static DiffData GetNewDiffData(FundData dataEntry)
+    {
+        return new DiffData
         {
-            var oldDataEntry = oldData.FirstOrDefault(x => x.Ticker == newDataEntry.Ticker);
+            Company = dataEntry.Company,
+            Ticker = dataEntry.Ticker,
+            SharesChange = StringToNumber(dataEntry.Shares),
+            MarketValueChange = StringToNumber(dataEntry.MarketValue),
+            Weight = StringToNumber(dataEntry.Weight),
+            NewEntry = true
+        };
+    }
 
-            if (oldDataEntry != null)
-            {
-                var sharesChange = StringToNumber(newDataEntry.Shares) - StringToNumber(oldDataEntry.Shares);
-                var marketValueChange =
-                    StringToNumber(newDataEntry.MarketValue) - StringToNumber(oldDataEntry.MarketValue);
+    /// <summary>
+    /// Overload for creating new diff data if there is old data to compare with.
+    /// </summary>
+    private static DiffData GetNewDiffData(FundData newDataEntry, FundData oldDataEntry)
+    {
+        var sharesChange = ComputeChange(newDataEntry.Shares, oldDataEntry.Shares);
+        var marketValueChange = ComputeChange(newDataEntry.MarketValue, oldDataEntry.MarketValue);
 
-                changes.Add(new DiffData
-                {
-                    Company = newDataEntry.Company,
-                    Ticker = newDataEntry.Ticker,
-                    SharesChange = sharesChange,
-                    MarketValueChange = marketValueChange,
-                    Weight = StringToNumber(newDataEntry.Weight),
-                    NewEntry = false
-                });
-            }
-            else
-            {
-                changes.Add(new DiffData
-                {
-                    Company = newDataEntry.Company,
-                    Ticker = newDataEntry.Ticker,
-                    SharesChange = StringToNumber(newDataEntry.Shares),
-                    MarketValueChange = StringToNumber(newDataEntry.MarketValue),
-                    Weight = StringToNumber(newDataEntry.Weight),
-                    NewEntry = true
-                });
-            }
-        }
+        return new DiffData
+        {
+            Company = newDataEntry.Company,
+            Ticker = newDataEntry.Ticker,
+            SharesChange = sharesChange,
+            MarketValueChange = marketValueChange,
+            Weight = StringToNumber(newDataEntry.Weight),
+            NewEntry = false
+        };
+    }
 
-        return changes;
+    /// <summary>
+    /// Computes the change between two string values from the csv.
+    /// </summary>
+    private static double ComputeChange(string newValue, string oldValue)
+    {
+        return StringToNumber(newValue) - StringToNumber(oldValue);
     }
 
     private static double StringToNumber(string data)
@@ -100,4 +130,3 @@ public static class DiffComputer
         return double.Parse(data, CultureInfo.InvariantCulture);
     }
 }
-

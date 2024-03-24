@@ -9,7 +9,7 @@ public class StorageTests
 
     [SetUp]
     public void Setup()
-    {  
+    {
         var current = Environment.CurrentDirectory;
         var projectDirectory = Directory.GetParent(current);
         _projectRoot = current;
@@ -18,7 +18,7 @@ public class StorageTests
             _projectRoot = projectDirectory.Parent!.Parent!.FullName;
         }
     }
-    
+
     [Test]
     public async Task CsvStorage_WriteToFileSystem_WritesStreamToTextFile()
     {
@@ -32,12 +32,12 @@ public class StorageTests
         const string text = "This is a sample text.";
         var bytes = encoding.GetBytes(text);
         using var memoryStream = new MemoryStream(bytes);
-        
+
         // Act
         // Not checking for exceptions as they are not meant to be thrown here.
-        await storage.Store(memoryStream, _projectRoot!,  directory, fileName);
+        await storage.Store(memoryStream, _projectRoot!, directory, fileName);
         var actualBytes = await File.ReadAllBytesAsync(totalPath);
-        
+
         // Assert
         Assert.Multiple(() =>
         {

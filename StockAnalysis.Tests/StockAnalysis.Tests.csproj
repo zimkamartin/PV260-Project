@@ -20,6 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\StockAnalysisConsole\StockAnalysisConsole.csproj" />
       <ProjectReference Include="..\StockAnalysis\StockAnalysis.csproj" />
     </ItemGroup>
 

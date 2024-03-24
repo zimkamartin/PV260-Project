@@ -58,7 +58,7 @@ public class DiffStoreTests
     {
         //act
         List<DiffData> data = DiffComputer.CreateDiff(Path.Combine(_testdataRoot, "testfiles_new", "test.csv"),
-            Path.Combine(_testdataRoot, "testfiles_old","test.csv"));
+            Path.Combine(_testdataRoot, "testfiles_old", "test.csv"));
         bool result = await DiffStore.StoreDiff(data, _testdataRoot, "test_diff");
 
         var totalPath = Path.Join(_testdataRoot, "test_diff.csv");
