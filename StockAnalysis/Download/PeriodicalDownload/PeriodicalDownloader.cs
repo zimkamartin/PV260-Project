@@ -4,6 +4,7 @@ using StockAnalysis.Utilities;
 namespace StockAnalysis.Download.PeriodicalDownload;
 
 /// <summary>
+/// TODO: Periodical Download will be deprecated after it will be uploaded on Azure.
 /// Calls the Downloader to get the data periodically,
 /// which is defined by the Period.
 /// </summary>
@@ -14,6 +15,7 @@ public class PeriodicalDownloader
     private readonly IDateTimeProvider _dateTimeProvider;
     private IEnumerable<HoldingInformation> _holdings;
     private HttpClient _client;
+    
 
     /// <summary>
     /// Holding information needed for the download.
@@ -50,7 +52,7 @@ public class PeriodicalDownloader
         set
         {
             _period = value;
-            SchedulePeriodicDownload();
+                SchedulePeriodicDownload();
         }
     }
 
@@ -89,7 +91,7 @@ public class PeriodicalDownloader
     {
         var current = _dateTimeProvider.UtcNow();
         // TODO: Is async callback OK?
-        // TODO: Configure storage directory based on download period. Use the new DateManipulator class.
+        // TODO: Configure storage directory based on download period. Use the new DateManipulator class
         var timer = new Timer(x => _downloadManager.GetHoldings(_holdings, _client, "."), null,
             _period.TimeToGo(current), _period.Interval);
         // TODO: Is there need to dispose the timer later?

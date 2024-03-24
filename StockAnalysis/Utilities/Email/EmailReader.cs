@@ -10,6 +10,7 @@ public static class EmailReader
         HashSet<string> addresses = new();
         while (true)
         {
+            // TODO: Or press enter if you are done
             Console.WriteLine("Please input a recipient's email address or type 'done' if you are done.");
             var line = Console.ReadLine();
             if (line is "done" or null)
