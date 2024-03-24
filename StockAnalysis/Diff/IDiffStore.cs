@@ -14,5 +14,5 @@ public interface IDiffStore
     /// <exception cref="ArgumentException">The path is an empty string (""). -or- path contains the name of a system device.</exception>
     /// <exception cref="PathTooLongException">The path is too long.</exception>
     /// <exception cref="DirectoryNotFoundException">The specified path is invalid</exception>
-    public static abstract Task<bool> StoreDiffToCsv(List<DiffData> data, String path, String name);
+    public static abstract Task<bool> StoreDiff(List<DiffData> data, String path, String name);
 }

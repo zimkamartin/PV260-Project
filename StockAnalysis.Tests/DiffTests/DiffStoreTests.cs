@@ -22,14 +22,29 @@ public class DiffStoreTests
     }
 
     [Test]
-    public async Task StoreDiff_shouldReturnTrueFileExists()
+    public async Task StoreDiff_WhenCalledRight_ShouldReturnTrue()
     {
         //act
         List<DiffData> data = DiffComputer.CreateDiff(Path.Combine(_projectRoot, "test.csv"));
-        bool result = await DiffStore.StoreDiffToCsv(data, _projectRoot, "test_diff");
+        bool result = await DiffStore.StoreDiff(data, _projectRoot, "test_diff");
 
         //assert
         Assert.IsTrue(result);
+
+        //cleanup
+        var totalPath = Path.Join(_projectRoot, "test_diff.csv");
+        File.Delete(totalPath);
+        Assert.That(File.Exists(totalPath), Is.False);
+    }
+    
+    [Test]
+    public async Task StoreDiff_WhenCalledRight_ShouldCreateFile()
+    {
+        //act
+        List<DiffData> data = DiffComputer.CreateDiff(Path.Combine(_projectRoot, "test.csv"));
+        bool result = await DiffStore.StoreDiff(data, _projectRoot, "test_diff");
+
+        //assert
         var totalPath = Path.Join(_projectRoot, "test_diff.csv");
         Assert.That(File.Exists(totalPath), Is.True);
 
@@ -39,11 +54,11 @@ public class DiffStoreTests
     }
 
     [Test]
-    public async Task StoreDiff_called_rightContentInFile()
+    public async Task StoreDiff_WhenCalledRight_ShouldBeRightContentInCreatedFile()
     {
         //act
         List<DiffData> data = DiffComputer.CreateDiff(Path.Combine(_projectRoot, "test.csv"));
-        bool result = await DiffStore.StoreDiffToCsv(data, _projectRoot, "test_diff");
+        bool result = await DiffStore.StoreDiff(data, _projectRoot, "test_diff");
 
         var totalPath = Path.Join(_projectRoot, "test_diff.csv");
         using var reader = new StreamReader(totalPath);

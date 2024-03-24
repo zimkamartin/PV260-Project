@@ -5,7 +5,7 @@ namespace StockAnalysis.Diff;
 
 public class DiffStore : IDiffStore
 {
-    public static async Task<bool> StoreDiffToCsv(List<DiffData> data, String path, String name)
+    public static async Task<bool> StoreDiff(List<DiffData> data, String path, String name)
     {
         //divide data to new, old, new entries
         List<DiffData> newEntries = data.Where(a => a.NewEntry).ToList();
