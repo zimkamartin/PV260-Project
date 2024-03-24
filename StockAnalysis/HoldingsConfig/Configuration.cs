@@ -5,7 +5,7 @@ namespace StockAnalysis.HoldingsConfig;
 
 public class Configuration
 {
-    public string ConfigurationPath { get; set; }
+    private string ConfigurationPath { get; set; }
 
     public Configuration(string configurationPath)
     {
@@ -31,7 +31,6 @@ public class Configuration
             var holding = await JsonSerializer.DeserializeAsync<Holdings>(reader);
             return holding.HoldingInfo.ToArray();
         }
-        //ToDo: Gotta catch 'em all!
         catch (Exception e) when (e is ArgumentNullException
                                       or JsonException )
         {
