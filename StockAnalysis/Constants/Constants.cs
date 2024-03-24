@@ -6,4 +6,5 @@ public static class Constants
     public const string CsvSeparator = ";";
     public const string CsvSharesUpIndicator = " up%";
     public const string CsvSharesDownIndicator = " down%";
+    public const string DateFolderNameFormat = "ddMMyyyy";
 }
