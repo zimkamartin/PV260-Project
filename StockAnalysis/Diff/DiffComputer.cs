@@ -6,23 +6,44 @@ namespace StockAnalysis.Diff;
 
 public static class DiffComputer
 {
-    public static List<DiffData> CreateDiff(string path)
+    public static List<DiffData> CreateDiff(string newFile, string? oldFile)
     {
+        string filename = Path.GetFileName(newFile);
         
-        // FIXME: constants "-old" and "-new"
-        var oldFile = Path.GetDirectoryName(path) + Path.DirectorySeparatorChar +
-                      Path.GetFileNameWithoutExtension(path) + "-old" + Path.GetExtension(path);
-        var newFile = Path.GetDirectoryName(path) + Path.DirectorySeparatorChar +
-                      Path.GetFileNameWithoutExtension(path) + "-new" + Path.GetExtension(path);
-        // Load old.csv and new.csv
-        // FIXME: Throws exception if file does not exist
-        var oldData = LoadData(oldFile);
-        var newData = LoadData(newFile);
+        //if path to old diff is null or file with it does not exists, diff is computed against default one
+        if (oldFile == null || !(Path.Exists(oldFile)))
+        {
+            oldFile = Path.GetDirectoryName(Path.GetDirectoryName(newFile)) + Path.DirectorySeparatorChar +
+                                            "Default" + Path.DirectorySeparatorChar + filename;
+        }
+        
+        if (filename != Path.GetFileName(oldFile))
+        {
+            throw new ArgumentException("different files cannot be compared");
+        }
 
-        // Compute changes
-        var changes = ComputeChanges(oldData, newData);
-        
-        return changes;
+        //try to load old/default csv, data empty if neither exists
+        var oldData = new List<FundData>();
+        try
+        {
+            oldData = LoadData(oldFile);
+        }
+        catch (FileNotFoundException)
+        { //do nothing - empty list already initialized
+        }
+
+        try
+        {
+            // Load new.csv
+            var newData = LoadData(newFile);
+            // Compute changes
+            var changes = ComputeChanges(oldData, newData);
+            return changes;
+        }
+        catch (FileNotFoundException e)
+        {
+            throw new ArgumentException("file with new data does not exist");
+        }
     }
 
     private static List<FundData> LoadData(string filename)
