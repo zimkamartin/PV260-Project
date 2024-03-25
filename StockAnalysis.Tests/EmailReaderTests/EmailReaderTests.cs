@@ -18,13 +18,13 @@ public class EmailReaderTests
             _projectRoot = projectDirectory.Parent!.Parent!.FullName;
         }
     }
-    
+
     [Test]
     public async Task ReadFromJson_EmptyFile_ReturnsEmpty()
     {
         // Arrange
         const string file = "empty_email.json";
-        
+
         // Act
         var result = await EmailReader.ReadFromJson(Path.Combine(_projectRoot!, StoreDirectory, file));
 
@@ -38,7 +38,7 @@ public class EmailReaderTests
         // Arrange
         const string file = "email.json";
         var expected = new[] { "test@test.com" };
-        
+
         // Act
         var result = await EmailReader.ReadFromJson(Path.Combine(_projectRoot!, StoreDirectory, file));
 
@@ -51,7 +51,7 @@ public class EmailReaderTests
     {
         // Arrange
         const string file = "email_bad.json";
-        
+
         // Act
         var result = await EmailReader.ReadFromJson(Path.Combine(_projectRoot!, StoreDirectory, file));
 
@@ -64,7 +64,7 @@ public class EmailReaderTests
     {
         // Arrange
         const string file = "email_not_exists.json";
-        
+
         // Act
         try
         {
@@ -84,13 +84,10 @@ public class EmailReaderTests
         const string email = "test@test.com";
         var expected = new[] { email };
         var actual = Array.Empty<string>();
-        
+
         // Act
-        SubstituteStdIn(email, () =>
-        {
-            actual = EmailReader.ReadFromCli();
-        });
-        
+        SubstituteStdIn(email, () => { actual = EmailReader.ReadFromCli(); });
+
         // Assert
         Assert.That(expected, Is.EqualTo(actual));
     }
@@ -102,31 +99,25 @@ public class EmailReaderTests
         const string email = "test.com";
         var expected = Array.Empty<string>();
         var actual = Array.Empty<string>();
-        
+
         // Act
-        SubstituteStdIn(email, () =>
-        {
-            actual = EmailReader.ReadFromCli();
-        });
-        
+        SubstituteStdIn(email, () => { actual = EmailReader.ReadFromCli(); });
+
         // Assert
         Assert.That(expected, Is.EqualTo(actual));
     }
-    
+
     [Test]
     public void ReadFromCli_OneValidOneInvalidEmail_ReturnsValid()
     {
         // Arrange
         const string input = "test.com\ntest@test.com";
-        var expected = new[]{"test@test.com"};
+        var expected = new[] { "test@test.com" };
         var actual = Array.Empty<string>();
-        
+
         // Act
-        SubstituteStdIn(input, () =>
-        {
-            actual = EmailReader.ReadFromCli();
-        });
-        
+        SubstituteStdIn(input, () => { actual = EmailReader.ReadFromCli(); });
+
         // Assert
         Assert.That(expected, Is.EqualTo(actual));
     }

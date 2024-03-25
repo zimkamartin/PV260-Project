@@ -18,6 +18,7 @@ public class MockClient : IClient
     {
         _messageRepository = messageRepository;
     }
+
     public Task SendMailAsync(MailMessage mail)
     {
         _messageRepository.Message = mail;
@@ -33,7 +34,7 @@ public class MockSenderGenerator : ISmtpClientGenerator
     {
         _messageRepository = messageRepository;
     }
-    
+
     public IClient GenerateClient()
     {
         return new MockClient(_messageRepository);
@@ -43,7 +44,7 @@ public class MockSenderGenerator : ISmtpClientGenerator
 public class SenderTests
 {
     private const string Address = "test@test.com";
-    
+
     [Test]
     public async Task Sender_SendNotification_ValidBody()
     {
@@ -53,13 +54,13 @@ public class SenderTests
         var sender = new Sender(Address, generator);
 
         // Act
-        await sender.SendNotification(new[]{ Address }, new List<string>());
-        
+        await sender.SendNotification(new[] { Address }, new List<string>());
+
         // Assert
-        Assert.That(repository.Message.Body, 
-                    Is.EqualTo("Good morning Madam/Sir,\nHere is your monthly diff.\n\nHave a nice day!\nSincerely Pink team"));
+        Assert.That(repository.Message.Body,
+            Is.EqualTo("Good morning Madam/Sir,\nHere is your monthly diff.\n\nHave a nice day!\nSincerely Pink team"));
     }
-    
+
     [Test]
     public async Task Sender_SendNotification_ValidFrom()
     {
@@ -70,12 +71,12 @@ public class SenderTests
         var sender = new Sender(Address, generator);
 
         // Act
-        await sender.SendNotification(new[]{ Address }, new List<string>());
-        
+        await sender.SendNotification(new[] { Address }, new List<string>());
+
         // Assert
         Assert.That(repository.Message.From, Is.EqualTo(testMail));
     }
-    
+
     [Test]
     public async Task Sender_SendNotification_ValidReceiver()
     {
@@ -86,8 +87,8 @@ public class SenderTests
         var sender = new Sender(Address, generator);
 
         // Act
-        await sender.SendNotification(new[]{ Address }, new List<string>());
-        
+        await sender.SendNotification(new[] { Address }, new List<string>());
+
         // Assert
         Assert.That(repository.Message.Bcc, Contains.Item(testMail));
     }

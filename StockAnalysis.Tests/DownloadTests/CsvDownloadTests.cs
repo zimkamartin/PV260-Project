@@ -11,9 +11,10 @@ public class CsvDownloadTests
         // Arrange
         // It might be better to mock a simple rest API service instead of sending requests to ark-funds.
         // Will improve this if I get the time.
-        const string uri = "https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv";
+        const string uri =
+            "https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv";
         using var client = new HttpClient();
-        
+
         // This is necessary, otherwise the website will reject our request.
         client.DefaultRequestHeaders.Add("User-Agent", "Other");
 
@@ -23,10 +24,10 @@ public class CsvDownloadTests
         {
             // Act
             await using var resultStream = await downloader.Get(uri, client);
-            
+
             // Assert
             // There is some data in the stream.
-            Assert.That( resultStream.Length, Is.GreaterThan(0) );
+            Assert.That(resultStream.Length, Is.GreaterThan(0));
             // Needed properties of the stream.
             Assert.Multiple(() =>
             {

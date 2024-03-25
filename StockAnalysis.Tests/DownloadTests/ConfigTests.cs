@@ -5,10 +5,10 @@ namespace StockAnalysisTests.DownloadTests;
 public class ConfigTests
 {
     private string? _projectRoot;
-    
+
     [SetUp]
     public void Setup()
-    {  
+    {
         var current = Environment.CurrentDirectory;
         var projectDirectory = Directory.GetParent(current);
         _projectRoot = current;
@@ -17,13 +17,13 @@ public class ConfigTests
             _projectRoot = projectDirectory.Parent!.Parent!.FullName;
         }
     }
-    
+
     [Test]
     public async Task Configuration_LoadConfiguration_EmptyFile()
     {
         var config = new Configuration(_projectRoot + "/Mocks/empty_config.json");
         var holdings = await config.LoadConfiguration();
-        
+
         Assert.That(holdings, Is.Empty);
     }
 
@@ -33,12 +33,14 @@ public class ConfigTests
         var config = new Configuration(_projectRoot + "/Mocks/single_config.json");
 
         var holdings = await config.LoadConfiguration();
-        
+
         Assert.That(holdings, Has.Length.EqualTo(1));
         Assert.Multiple(() =>
         {
             Assert.That(holdings[0].Name, Is.EqualTo("ARKK-Holdings"));
-            Assert.That(holdings[0].Uri, Is.EqualTo("https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv"));
+            Assert.That(holdings[0].Uri,
+                Is.EqualTo(
+                    "https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv"));
         });
     }
 
@@ -48,20 +50,20 @@ public class ConfigTests
         var config = new Configuration(_projectRoot + "/Mocks/multi_config.json");
 
         var holdings = await config.LoadConfiguration();
-        
+
         Assert.That(holdings, Has.Length.EqualTo(3));
         Assert.Multiple(() =>
         {
             Assert.That(holdings[0].Name, Is.EqualTo("Holding1"));
             Assert.That(holdings[0].Uri, Is.EqualTo("Uri1"));
         });
-        
+
         Assert.Multiple(() =>
         {
             Assert.That(holdings[1].Name, Is.EqualTo("Holding2"));
             Assert.That(holdings[1].Uri, Is.EqualTo(""));
         });
-        
+
         Assert.Multiple(() =>
         {
             Assert.That(holdings[2].Name, Is.EqualTo("Holding3"));
@@ -82,7 +84,7 @@ public class ConfigTests
         {
             Assert.Pass("Method successfully threw FileNotFoundException.");
         }
-        
+
         Assert.Fail("The method was expected to throw FileNotFoundException.");
     }
 }

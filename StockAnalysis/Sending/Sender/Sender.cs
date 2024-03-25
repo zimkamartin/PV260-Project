@@ -7,7 +7,7 @@ public class Sender : ISender
 {
     private readonly ISmtpClientGenerator _generator;
     private readonly MailAddress _senderAddress;
-    
+
     public Sender(string senderMail, ISmtpClientGenerator generator)
     {
         _senderAddress = new MailAddress(senderMail);
@@ -23,6 +23,7 @@ public class Sender : ISender
         {
             message.Bcc.Add(new MailAddress(recipient));
         }
+
         message.Body = "Good morning Madam/Sir,\nHere is your monthly diff.\n\nHave a nice day!\nSincerely Pink team";
         try
         {
@@ -38,7 +39,7 @@ public class Sender : ISender
 
         return message;
     }
-    
+
     public async Task SendNotification(IEnumerable<string> recipients, IEnumerable<string> attachmentPaths)
     {
         MailMessage message;

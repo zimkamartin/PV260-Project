@@ -9,6 +9,7 @@ public class Period
     private readonly PeriodType _type;
     private readonly DateTime _start;
     public TimeSpan Interval { get; }
+    public DateTime Start => _start;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Period"/> class.

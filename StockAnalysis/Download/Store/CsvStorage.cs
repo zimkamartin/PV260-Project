@@ -19,16 +19,16 @@ public class CsvStorage : IStore
         {
             return false;
         }
-        
+
         var fullStoragePath = Path.Combine(storagePath, storageDirectory);
         if (!Directory.Exists(fullStoragePath))
         {
             Directory.CreateDirectory(fullStoragePath);
         }
-        
+
         var finalPath = Path.Combine(fullStoragePath,
-                                          fileName
-                                          + Constants.Constants.CsvExtension);
+            fileName
+            + Constants.Constants.CsvExtension);
         try
         {
             stream.Seek(0, SeekOrigin.Begin);
@@ -37,8 +37,8 @@ public class CsvStorage : IStore
             RemoveLastLine(fileStream);
             return true;
         }
-        catch (Exception e) when (e is DirectoryNotFoundException 
-                                      or NotSupportedException 
+        catch (Exception e) when (e is DirectoryNotFoundException
+                                      or NotSupportedException
                                       or IOException)
         {
             return false;
@@ -50,7 +50,10 @@ public class CsvStorage : IStore
         }
     }
 
-    // The last line in the ARK Holdings csv files is filled with plaintext that makes the diff tool crash. :(
+    /// <summary>
+    /// Removes the last line from a stream.
+    /// Reason: The last line in the ARK Holdings csv files is filled with plaintext that makes the diff tool crash. :(
+    /// </summary>
     private static void RemoveLastLine(Stream stream)
     {
         stream.Seek(0, SeekOrigin.Begin);
@@ -62,7 +65,7 @@ public class CsvStorage : IStore
             offset += prevLineLen;
             prevLineLen = line.Length + 1;
         }
-        
+
         if (offset > 0)
         {
             stream.SetLength(offset);

@@ -22,7 +22,7 @@ public static class DateManipulator
     /// <param name="step">A step in a given period. -1 means one period back, 1 means one period forward.</param>
     /// <param name="periodType">The type of period used for the service.</param>
     /// <returns>A folder name corresponding to the date shifted by step * period.</returns>
-    public static string GetFolderName(DateOnly date, int step, PeriodType periodType )
+    public static string GetFolderName(DateOnly date, int step, PeriodType periodType)
     {
         var resultDate = periodType switch
         {
@@ -32,7 +32,7 @@ public static class DateManipulator
             PeriodType.Weekly => date.AddDays(7 * step),
             _ => date,
         };
-        
+
         return resultDate.ToString(Constants.Constants.DateFolderNameFormat);
     }
 

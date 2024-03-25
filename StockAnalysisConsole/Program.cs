@@ -1,5 +1,6 @@
-﻿using StockAnalysis.Constants;
+using StockAnalysis.Constants;
 using StockAnalysis.Download.Getter;
+using StockAnalysis.Download.PeriodicalDownload;
 using StockAnalysis.Download.Store;
 using StockAnalysis.Sending.ClientGenerator;
 using StockAnalysis.Sending.Sender;
@@ -12,10 +13,68 @@ namespace StockAnalysisConsole
     {
         private const string ClientHost = "smtp.gmail.com";
         private const int SmtpPort = 587;
-        private const string SenderMail = "pv260.s24.goth.pinkteam@gmail.com"; 
+        private const string SenderMail = "pv260.s24.goth.pinkteam@gmail.com";
+
         public static async Task Main()
         {
             Console.WriteLine("Welcome to StockAnalysis.");
+
+            var addresses = await LoadAddresses();
+            if (!addresses.Any())
+            {
+                Console.WriteLine("No addresses provided - e-mails will not be sent.");
+                return;
+            }
+
+            var period = SetPeriod();
+
+            Console.WriteLine("Starting analyzer. ");
+
+            // Create sender and manager.
+            var sender = new Sender(SenderMail,
+                new SmtpClientGenerator(SmtpPort,
+                    SenderMail,
+                    true,
+                    ClientHost));
+
+            var manager = new AnalysisManager(new CsvDownload(),
+                new CsvStorage()
+            );
+
+            // Create client for download.
+            using var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("User-Agent", "Other");
+            
+            List<string> diffPaths;
+            try
+            {
+                diffPaths = await manager.PerformAnalysis(client, Constants.CsvExtension, period);
+
+                if (diffPaths.Count == 0)
+                {
+                    Console.WriteLine("Failed to obtain any holding diffs.");
+                    return;
+                }
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Analysis failed.");
+                return;
+            }
+
+            // Send e-mails.
+            await SendEmails(sender, addresses, diffPaths);
+
+            Console.WriteLine("Have a nice day!");
+        }
+
+
+        /// <summary>
+        /// Load addresses from file (JSON) or CLI.
+        /// </summary>
+        /// <returns>List of e-mail addresses of recipients.</returns>
+        private static async Task<string[]> LoadAddresses()
+        {
             Console.WriteLine("Would you like to load emails from Emails.json? y/n");
             string[] addresses;
             var key = Console.ReadKey(true);
@@ -23,7 +82,7 @@ namespace StockAnalysisConsole
             {
                 try
                 {
-                    addresses = await EmailReader.ReadFromJson(Paths.GetEmailFilePath());    
+                    addresses = await EmailReader.ReadFromJson(Paths.GetEmailFilePath());
                 }
                 catch (Exception)
                 {
@@ -36,27 +95,43 @@ namespace StockAnalysisConsole
                 addresses = EmailReader.ReadFromCli();
             }
 
-            if (!addresses.Any())
+            return addresses;
+        }
+
+        /// <summary>
+        /// Allows user to configure period for analysis.
+        /// </summary>
+        private static Period? SetPeriod()
+        {
+            // TODO: Add options for period setting.
+            Console.WriteLine("Would you like to set monthly period event for analysis? y/n");
+
+            Period? period = null;
+            if (Console.ReadKey(true).KeyChar == 'y')
             {
-                Console.WriteLine("No addresses provided - emails will not be sent.");
+                Console.WriteLine("Monthly period event set.");
+                period = new Period(PeriodType.Monthly, DateTime.UtcNow);
             }
 
-            Console.WriteLine("Starting analyzer. ");
+            return period;
+        }
 
-            var sender = new Sender(SenderMail, 
-                                    new SmtpClientGenerator(SmtpPort, 
-                                                    SenderMail, 
-                                                         true, 
-                                                        ClientHost));
-            
-            var manager = new AnalysisManager(new CsvDownload(), 
-                                                new CsvStorage(),
-                                                sender);
-            
-            using var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("User-Agent", "Other");
-            
-            await manager.PerformAnalysis(client, Constants.CsvExtension, addresses);
+        /// <summary>
+        /// Sends e-mails to recipients.
+        /// </summary>
+        private static async Task SendEmails(Sender sender, string[] addresses, List<string> diffPaths)
+        {
+            try
+            {
+                Console.WriteLine("Analysis completed. Sending e-mails... ");
+                await sender.SendNotification(addresses, diffPaths);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Email sending failed.");
+            }
+
+            Console.WriteLine("E-mails sent. Check your inbox.");
         }
     }
 }

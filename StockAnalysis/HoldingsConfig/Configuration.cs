@@ -32,7 +32,7 @@ public class Configuration
             return holding.HoldingInfo.ToArray();
         }
         catch (Exception e) when (e is ArgumentNullException
-                                      or JsonException )
+                                      or JsonException)
         {
             return Array.Empty<HoldingInformation>();
         }
