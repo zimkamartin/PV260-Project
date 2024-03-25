@@ -1,4 +1,3 @@
-using StockAnalysis.Download;
 using StockAnalysis.Download.Getter;
 
 namespace StockAnalysisTests.DownloadTests;

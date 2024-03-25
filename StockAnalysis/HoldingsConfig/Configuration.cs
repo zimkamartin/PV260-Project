@@ -1,5 +1,4 @@
 using System.Text.Json;
-using StockAnalysis.Download;
 
 namespace StockAnalysis.HoldingsConfig;
 

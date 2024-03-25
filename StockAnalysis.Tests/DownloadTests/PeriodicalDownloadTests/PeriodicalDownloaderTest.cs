@@ -1,6 +1,5 @@
 using Moq;
 using StockAnalysis.Constants;
-using StockAnalysis.Download;
 using StockAnalysis.Download.Getter;
 using StockAnalysis.Download.PeriodicalDownload;
 using StockAnalysis.Download.Store;
