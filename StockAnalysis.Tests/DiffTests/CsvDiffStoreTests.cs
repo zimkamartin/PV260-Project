@@ -1,7 +1,8 @@
-﻿using System.Globalization;
-using NUnit.Framework.Internal;
-using StockAnalysis.Constants;
-using StockAnalysis.Diff;
+﻿using StockAnalysis.Constants;
+using StockAnalysis.Diff.Compute;
+using StockAnalysis.Diff.Data;
+using StockAnalysis.Diff.Load;
+using StockAnalysis.Diff.Store;
 
 namespace StockAnalysisTests.DiffTests;
 
@@ -22,30 +23,19 @@ public class CsvDiffStoreTests
     }
 
     [Test]
-    public async Task StoreDiff_WhenCalledRight_ShouldReturnTrue()
-    {
-        //act
-        List<DiffData> data = CsvDiffComputer.CreateDiff(Path.Combine(_testdataRoot, "testfiles_new", "test.csv"), null);
-        bool result = await CsvDiffStore.StoreDiff(data, _testdataRoot, "test_diff");
-
-        //assert
-        Assert.IsTrue(result);
-
-        //cleanup
-        var totalPath = Path.Join(_testdataRoot, "test_diff.csv");
-        File.Delete(totalPath);
-        Assert.That(File.Exists(totalPath), Is.False);
-    }
-
-    [Test]
     public async Task StoreDiff_WhenCalledRight_ShouldCreateFile()
     {
+        //arrange
+        IDiffStore storage = new CsvDiffStore();
+        IDiffCompute computer = new CsvDiffComputer(new CsvHoldingLoader());
+        var data = computer.CreateDiff(
+            Path.Combine(_testdataRoot!, "testfiles_new", "test.csv"), 
+            null);
+        var totalPath = Path.Join(_testdataRoot, "test_diff.csv");
         //act
-        List<DiffData> data = CsvDiffComputer.CreateDiff(Path.Combine(_testdataRoot, "testfiles_new", "test.csv"), null);
-        bool result = await CsvDiffStore.StoreDiff(data, _testdataRoot, "test_diff");
+        await storage.StoreDiff(data, _testdataRoot!, "test_diff");
 
         //assert
-        var totalPath = Path.Join(_testdataRoot, "test_diff.csv");
         Assert.That(File.Exists(totalPath), Is.True);
 
         //cleanup
@@ -56,37 +46,44 @@ public class CsvDiffStoreTests
     [Test]
     public async Task StoreDiff_WhenCalledRight_ShouldBeRightContentInCreatedFile()
     {
-        //act
-        List<DiffData> data = CsvDiffComputer.CreateDiff(Path.Combine(_testdataRoot, "testfiles_new", "test.csv"),
-            Path.Combine(_testdataRoot, "testfiles_old", "test.csv"));
-        bool result = await CsvDiffStore.StoreDiff(data, _testdataRoot, "test_diff");
-
+        // Arrange
+        IDiffStore storage = new CsvDiffStore();
+        IDiffCompute computer = new CsvDiffComputer(new CsvHoldingLoader());
+        var data = computer.CreateDiff(
+            Path.Combine(_testdataRoot!, "testfiles_new", "test.csv"),
+            Path.Combine(_testdataRoot!, "testfiles_old", "test.csv"));
+        var diffData = data.ToList();
         var totalPath = Path.Join(_testdataRoot, "test_diff.csv");
+
+        //act
+        await storage.StoreDiff(diffData, _testdataRoot!, "test_diff");
         using var reader = new StreamReader(totalPath);
-        string? line = reader.ReadLine();
+            var line = await reader.ReadLineAsync();
 
         //assert
         Assert.That(line,
             Is.EqualTo("sep=" + Constants.CsvSeparator));
-        line = reader.ReadLine();
+        line = await reader.ReadLineAsync();
         Assert.That(line,
             Is.EqualTo("New positions:" + Constants.CsvSeparator + Constants.CsvSeparator + Constants.CsvSeparator));
-        line = reader.ReadLine();
+        line = await reader.ReadLineAsync();
         Assert.That(line,
             Is.EqualTo("Company name" +
                        Constants.CsvSeparator + "ticker" + Constants.CsvSeparator + "#shares" +
                        Constants.CsvSeparator + "weight(%)"));
-        List<DiffData> newEntries = data.Where(a => a.NewEntry).ToList();
-        List<DiffData> oldEntriesNegative = data.Where(a => !a.NewEntry && a.SharesChange < 0).ToList();
-        foreach (var datavar in newEntries)
+        var newEntries = diffData.Where(a => a.NewEntry).ToList();
+        var oldEntriesNegative = diffData.Where(
+            a => a is { NewEntry: false, SharesChange: < 0 })
+            .ToList();
+        foreach (var entry in newEntries)
         {
-            line = reader.ReadLine();
+            line = await reader.ReadLineAsync();
             Assert.That(line,
-                Is.EqualTo(datavar.Company + Constants.CsvSeparator + datavar.Ticker + Constants.CsvSeparator +
-                           datavar.SharesChange + Constants.CsvSeparator + datavar.Weight));
+                Is.EqualTo(entry.Company + Constants.CsvSeparator + entry.Ticker + Constants.CsvSeparator +
+                           entry.SharesChange + Constants.CsvSeparator + entry.Weight));
         }
 
-        line = reader.ReadLine();
+        line = await reader.ReadLineAsync();
         Assert.That(line,
             Is.EqualTo(
                 "Increased positions:" + Constants.CsvSeparator + Constants.CsvSeparator + Constants.CsvSeparator));
@@ -94,7 +91,7 @@ public class CsvDiffStoreTests
         //go to last line
         while (reader.EndOfStream == false)
         {
-            line = reader.ReadLine();
+            line = await reader.ReadLineAsync();
         }
 
         //check last line
