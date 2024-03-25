@@ -1,11 +1,10 @@
-﻿using System.Text;
-using Const = StockAnalysis.Constants.Constants;
+﻿using Const = StockAnalysis.Constants.Constants;
 
 namespace StockAnalysis.Diff;
 
 public class DiffStore : IDiffStore
 {
-    public static async Task<bool> StoreDiff(List<DiffData> data, String path, String name)
+    public static async Task StoreDiff(List<DiffData> data, String path, String name)
     {
         //divide data to new, old, new entries
         List<DiffData> newEntries = data.Where(a => a.NewEntry).ToList();
@@ -27,13 +26,10 @@ public class DiffStore : IDiffStore
                 WriteDiffPositions(fileWriter, oldEntriesPositive, "Increased", Const.CsvSharesUpIndicator);
                 WriteDiffPositions(fileWriter, oldEntriesNegative, "Reduced", Const.CsvSharesDownIndicator);
             }
-            return true;
         }
-        catch (Exception e) when (e is NotSupportedException
-                                      or IOException
-                                      or InvalidOperationException)
+        catch (Exception e)
         {
-            return false;
+            throw new DiffStoreException(e.Message);
         }
         finally
         {

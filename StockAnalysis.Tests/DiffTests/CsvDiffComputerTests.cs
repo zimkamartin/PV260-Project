@@ -2,7 +2,7 @@
 
 namespace StockAnalysisTests.DiffTests;
 
-public class DiffComputerTests
+public class CsvDiffComputerTests
 {
     // If changes are computed correctly
     [Test]
@@ -23,7 +23,7 @@ public class DiffComputerTests
         };
 
         // Act
-        var changes = DiffComputer.ComputeChanges(oldData, newData);
+        var changes = CsvDiffComputer.ComputeChanges(oldData, newData);
 
         // Assert
         Assert.That(changes.Count, Is.EqualTo(3));
@@ -53,7 +53,7 @@ public class DiffComputerTests
         };
 
         // Act
-        var changes = DiffComputer.ComputeChanges(oldData, newData);
+        var changes = CsvDiffComputer.ComputeChanges(oldData, newData);
 
         // Assert
         Assert.That(changes.Count, Is.EqualTo(3));

@@ -3,7 +3,16 @@ using StockAnalysis.Download;
 
 namespace StockAnalysis.HoldingsConfig;
 
-public class Configuration
+public interface IConfiguration
+{
+    /// <summary>
+    /// Loads a configuration of the different holdings that must be retrieved and analyzed.
+    /// </summary>
+    /// <returns>Information about the required holdings.</returns>
+    Task<IEnumerable<HoldingInformation>> LoadConfiguration();
+}
+
+public class Configuration : IConfiguration
 {
     private string ConfigurationPath { get; set; }
 

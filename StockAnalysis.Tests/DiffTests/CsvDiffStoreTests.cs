@@ -5,7 +5,7 @@ using StockAnalysis.Diff;
 
 namespace StockAnalysisTests.DiffTests;
 
-public class DiffStoreTests
+public class CsvDiffStoreTests
 {
     private string? _testdataRoot;
 
@@ -25,8 +25,8 @@ public class DiffStoreTests
     public async Task StoreDiff_WhenCalledRight_ShouldReturnTrue()
     {
         //act
-        List<DiffData> data = DiffComputer.CreateDiff(Path.Combine(_testdataRoot, "testfiles_new", "test.csv"), null);
-        bool result = await DiffStore.StoreDiff(data, _testdataRoot, "test_diff");
+        List<DiffData> data = CsvDiffComputer.CreateDiff(Path.Combine(_testdataRoot, "testfiles_new", "test.csv"), null);
+        bool result = await CsvDiffStore.StoreDiff(data, _testdataRoot, "test_diff");
 
         //assert
         Assert.IsTrue(result);
@@ -41,8 +41,8 @@ public class DiffStoreTests
     public async Task StoreDiff_WhenCalledRight_ShouldCreateFile()
     {
         //act
-        List<DiffData> data = DiffComputer.CreateDiff(Path.Combine(_testdataRoot, "testfiles_new", "test.csv"), null);
-        bool result = await DiffStore.StoreDiff(data, _testdataRoot, "test_diff");
+        List<DiffData> data = CsvDiffComputer.CreateDiff(Path.Combine(_testdataRoot, "testfiles_new", "test.csv"), null);
+        bool result = await CsvDiffStore.StoreDiff(data, _testdataRoot, "test_diff");
 
         //assert
         var totalPath = Path.Join(_testdataRoot, "test_diff.csv");
@@ -57,9 +57,9 @@ public class DiffStoreTests
     public async Task StoreDiff_WhenCalledRight_ShouldBeRightContentInCreatedFile()
     {
         //act
-        List<DiffData> data = DiffComputer.CreateDiff(Path.Combine(_testdataRoot, "testfiles_new", "test.csv"),
+        List<DiffData> data = CsvDiffComputer.CreateDiff(Path.Combine(_testdataRoot, "testfiles_new", "test.csv"),
             Path.Combine(_testdataRoot, "testfiles_old", "test.csv"));
-        bool result = await DiffStore.StoreDiff(data, _testdataRoot, "test_diff");
+        bool result = await CsvDiffStore.StoreDiff(data, _testdataRoot, "test_diff");
 
         var totalPath = Path.Join(_testdataRoot, "test_diff.csv");
         using var reader = new StreamReader(totalPath);
