@@ -3,7 +3,7 @@ using StockAnalysis.Sending.Client;
 using StockAnalysis.Sending.ClientGenerator;
 using StockAnalysis.Sending.Sender;
 
-namespace StockAnalysisTests.SendEmailTests;
+namespace StockAnalysisTests.SendingTests;
 
 public class MessageRepository
 {

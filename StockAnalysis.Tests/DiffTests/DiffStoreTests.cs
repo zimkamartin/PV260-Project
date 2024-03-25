@@ -91,7 +91,7 @@ public class DiffStoreTests
             Is.EqualTo(
                 "Increased positions:" + Constants.CsvSeparator + Constants.CsvSeparator + Constants.CsvSeparator));
 
-        //go to last line
+        // go to last line
         while (reader.EndOfStream == false)
         {
             line = reader.ReadLine();

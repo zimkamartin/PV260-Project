@@ -8,9 +8,9 @@ public class DiffStore : IDiffStore
     public static async Task<bool> StoreDiff(List<DiffData> data, String path, String name)
     {
         //divide data to new, old, new entries
-        List<DiffData> newEntries = data.Where(a => a.NewEntry).ToList();
-        List<DiffData> oldEntriesPositive = data.Where(a => !a.NewEntry && a.SharesChange >= 0).ToList();
-        List<DiffData> oldEntriesNegative = data.Where(a => !a.NewEntry && a.SharesChange < 0).ToList();
+        var newEntries = data.Where(a => a.NewEntry).ToList();
+        var oldEntriesPositive = data.Where(a => a is { NewEntry: false, SharesChange: >= 0 }).ToList();
+        var oldEntriesNegative = data.Where(a => a is { NewEntry: false, SharesChange: < 0 }).ToList();
 
         //change shares to absolute number - would be negative - comment if not wanted
         oldEntriesNegative.ForEach(a => a.SharesChange = double.Abs(a.SharesChange));

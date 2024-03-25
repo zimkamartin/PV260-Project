@@ -3,7 +3,6 @@ using StockAnalysis.Download.Getter;
 using StockAnalysis.Download.Store;
 using StockAnalysis.HoldingsConfig;
 
-
 namespace StockAnalysisTests.DownloadTests;
 
 public class DownloadManagerTests
