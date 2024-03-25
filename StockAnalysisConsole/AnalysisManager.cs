@@ -1,8 +1,7 @@
-using StockAnalysis.Diff;
+using StockAnalysis.Diff.Compute;
+using StockAnalysis.Diff.Store;
 using StockAnalysis.Download;
-using StockAnalysis.Download.Getter;
 using StockAnalysis.Download.PeriodicalDownload;
-using StockAnalysis.Download.Store;
 using StockAnalysis.HoldingsConfig;
 using StockAnalysis.Utilities;
 using StockAnalysisConsole.Utils.Paths;
@@ -11,13 +10,20 @@ namespace StockAnalysisConsole;
 
 public class AnalysisManager
 {
-    private readonly Configuration _config;
+    private readonly IConfiguration _config;
     private readonly DownloadManager _manager;
+    private readonly IDiffCompute _diffComputer;
+    private readonly IDiffStore _diffStore;
 
-    public AnalysisManager(IGetter dataGetter, IStore dataStore)
+    public AnalysisManager(DownloadManager manager,
+                           IDiffCompute diffComputer, 
+                           IDiffStore diffStore)
     {
-        _config = new Configuration(Paths.GetConfigFilePath());
-        _manager = new DownloadManager(Paths.GetDownloadFolderPath(), dataGetter, dataStore);
+        _config = new JsonConfiguration(Paths.GetConfigFilePath());
+        _manager = manager;
+        _diffComputer = diffComputer;
+        _diffStore = diffStore;
+
     }
 
     /// <summary>
@@ -50,12 +56,12 @@ public class AnalysisManager
     /// <summary>
     /// Performs a diff on a single holding.
     /// </summary>
-    private static async Task PerformDiff(HoldingInformation holding, string holdingPathNew, string? holdingPathOld)
+    private async Task PerformDiff(HoldingInformation holding, string holdingPathNew, string? holdingPathOld)
     {
         try
         {
-            var data = DiffComputer.CreateDiff(holdingPathNew, holdingPathOld);
-            await DiffStore.StoreDiff(data, Paths.GetDiffFolderPath(), holding.Name);
+            var data = _diffComputer.CreateDiff(holdingPathNew, holdingPathOld);
+            await _diffStore.StoreDiff(data, Paths.GetDiffFolderPath(), holding.Name);
         }
         catch (Exception)
         {
@@ -67,7 +73,7 @@ public class AnalysisManager
     /// <summary>
     /// Performs diffs for all holdings.
     /// </summary>
-    private static async Task<List<string>> PerformDiffs(IEnumerable<HoldingInformation> holdings,
+    private async Task<List<string>> PerformDiffs(IEnumerable<HoldingInformation> holdings,
         string storageDir, string extension, Period? period)
     {
         var diffPaths = new List<string>();
@@ -96,10 +102,10 @@ public class AnalysisManager
     /// <summary>
     /// Gets new data for all holdings.
     /// </summary>
-    private async Task<bool> GetNewData(IEnumerable<HoldingInformation> holdings, HttpClient client,
+    private async Task<bool> GetNewData(IEnumerable<HoldingInformation> holdings,
         string storageDirectory)
     {
-        return await _manager.GetHoldings(holdings, client, storageDirectory);
+        return await _manager.GetHoldings(holdings, storageDirectory);
     }
 
     /// <summary>
@@ -109,10 +115,10 @@ public class AnalysisManager
     /// <returns>Paths of diffs.</returns>
     public virtual async Task<List<string>> PerformAnalysis(HttpClient client, string extension, Period? period)
     {
-        var holdings = await _config.LoadConfiguration();
+        var holdings = (await _config.LoadConfiguration()).ToList();
         // When Period is set, "now" can be obtained from it. But not every time.
         var storageDir = DateManipulator.GetFolderName(DateOnly.FromDateTime(DateTime.UtcNow));
-        if (!await GetNewData(holdings, client, storageDir))
+        if (!await GetNewData(holdings, storageDir))
         {
             return new List<string>();
         }
@@ -123,7 +129,7 @@ public class AnalysisManager
     public async Task PerformAnalysisPeriodically(HttpClient client, string extension, Period period)
     {
         var holdings = await _config.LoadConfiguration();
-        var downloader = new PeriodicalDownloader(period, new SystemDateTime(), holdings, client, extension, PerformAnalysis);
+        var downloader = new PeriodicalDownloader(period, new LocalDateTime(), holdings, client, extension, PerformAnalysis);
         downloader.SchedulePeriodicDownload();
     }
 }

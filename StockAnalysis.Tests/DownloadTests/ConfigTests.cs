@@ -21,7 +21,7 @@ public class ConfigTests
     [Test]
     public async Task Configuration_LoadConfiguration_EmptyFile()
     {
-        var config = new Configuration(_projectRoot + "/Mocks/empty_config.json");
+        var config = new JsonConfiguration(_projectRoot + "/Mocks/empty_config.json");
         var holdings = await config.LoadConfiguration();
 
         Assert.That(holdings, Is.Empty);
@@ -30,15 +30,19 @@ public class ConfigTests
     [Test]
     public async Task Configuration_LoadConfiguration_SingleEntry()
     {
-        var config = new Configuration(_projectRoot + "/Mocks/single_config.json");
+        // Arrange
+        var config = new JsonConfiguration(_projectRoot + "/Mocks/single_config.json");
 
+        // Act
         var holdings = await config.LoadConfiguration();
-
-        Assert.That(holdings, Has.Length.EqualTo(1));
+        var holdingInformation = holdings.ToList();
+        
+        // Assert
+        Assert.That(holdingInformation, Has.Count.EqualTo(1));
         Assert.Multiple(() =>
         {
-            Assert.That(holdings[0].Name, Is.EqualTo("ARKK-Holdings"));
-            Assert.That(holdings[0].Uri,
+            Assert.That(holdingInformation[0].Name, Is.EqualTo("ARKK-Holdings"));
+            Assert.That(holdingInformation[0].Uri,
                 Is.EqualTo(
                     "https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv"));
         });
@@ -47,44 +51,45 @@ public class ConfigTests
     [Test]
     public async Task Configuration_LoadConfiguration_MultipleEntries()
     {
-        var config = new Configuration(_projectRoot + "/Mocks/multi_config.json");
+        var config = new JsonConfiguration(_projectRoot + "/Mocks/multi_config.json");
 
         var holdings = await config.LoadConfiguration();
-
-        Assert.That(holdings, Has.Length.EqualTo(3));
+        var holdingInformation = holdings.ToList();
+        
+        Assert.That(holdingInformation, Has.Count.EqualTo(3));
         Assert.Multiple(() =>
         {
-            Assert.That(holdings[0].Name, Is.EqualTo("Holding1"));
-            Assert.That(holdings[0].Uri, Is.EqualTo("Uri1"));
+            Assert.That(holdingInformation[0].Name, Is.EqualTo("Holding1"));
+            Assert.That(holdingInformation[0].Uri, Is.EqualTo("Uri1"));
         });
 
         Assert.Multiple(() =>
         {
-            Assert.That(holdings[1].Name, Is.EqualTo("Holding2"));
-            Assert.That(holdings[1].Uri, Is.EqualTo(""));
+            Assert.That(holdingInformation[1].Name, Is.EqualTo("Holding2"));
+            Assert.That(holdingInformation[1].Uri, Is.EqualTo(""));
         });
 
         Assert.Multiple(() =>
         {
-            Assert.That(holdings[2].Name, Is.EqualTo("Holding3"));
-            Assert.That(holdings[2].Uri, Is.EqualTo(".Uri3"));
+            Assert.That(holdingInformation[2].Name, Is.EqualTo("Holding3"));
+            Assert.That(holdingInformation[2].Uri, Is.EqualTo(".Uri3"));
         });
     }
 
     [Test]
     public async Task Configuration_LoadConfiguration_NonExistentFile()
     {
-        var config = new Configuration(_projectRoot + "/Mocks/xxxNotExistsxxx.json");
+        var config = new JsonConfiguration(_projectRoot + "/Mocks/xxxNotExistsxxx.json");
 
         try
         {
-            var holdings = await config.LoadConfiguration();
+            _ = await config.LoadConfiguration();
         }
-        catch (FileNotFoundException)
+        catch (ConfigurationException)
         {
-            Assert.Pass("Method successfully threw FileNotFoundException.");
+            Assert.Pass();
         }
 
-        Assert.Fail("The method was expected to throw FileNotFoundException.");
+        Assert.Fail("The method was expected to throw an exception.");
     }
 }

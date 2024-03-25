@@ -23,14 +23,14 @@ public class DownloadManagerTests
         var resultDir = Path.Combine(StoragePath, StorageDir);
         var fullResultPath = Path.Combine(resultDir, resultName);
 
-        var manager = new DownloadManager(StoragePath, new CsvDownload(), new CsvStorage());
         using var client = new HttpClient();
-
         // This is necessary, otherwise the website will reject our request.
         client.DefaultRequestHeaders.Add("User-Agent", "Other");
 
+        var manager = new DownloadManager(StoragePath, new CsvDownload(), new CsvStorage(), client);
+
         // Act
-        var result = await manager.GetHoldings(holdings, client, StorageDir);
+        var result = await manager.GetHoldings(holdings, StorageDir);
 
         // Assert
         Assert.Multiple(() =>
@@ -56,14 +56,14 @@ public class DownloadManagerTests
                 "https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_GENOMIC_REVOLUTION_ETF_ARKG_HOLDINGS.csv")
         };
         var resultDir = Path.Combine(StoragePath, StorageDir);
-        var manager = new DownloadManager(".", new CsvDownload(), new CsvStorage());
         using var client = new HttpClient();
-
         // This is necessary, otherwise the website will reject our request.
         client.DefaultRequestHeaders.Add("User-Agent", "Other");
+        
+        var manager = new DownloadManager(".", new CsvDownload(), new CsvStorage(), client);
 
         // Act
-        var result = await manager.GetHoldings(holdings, client, "download-test");
+        var result = await manager.GetHoldings(holdings, "download-test");
         Assert.Multiple(() =>
         {
             // Assert

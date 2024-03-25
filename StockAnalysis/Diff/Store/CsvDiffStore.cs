@@ -1,39 +1,36 @@
-﻿using System.Text;
+﻿using StockAnalysis.Diff.Data;
 using Const = StockAnalysis.Constants.Constants;
 
-namespace StockAnalysis.Diff;
+namespace StockAnalysis.Diff.Store;
 
-public class DiffStore : IDiffStore
+public class CsvDiffStore : IDiffStore
 {
-    public static async Task<bool> StoreDiff(List<DiffData> data, String path, String name)
+    public async Task StoreDiff(IEnumerable<DiffData> data, string path, string name)
     {
         //divide data to new, old, new entries
         var newEntries = data.Where(a => a.NewEntry).ToList();
-        var oldEntriesPositive = data.Where(a => a is { NewEntry: false, SharesChange: >= 0 }).ToList();
-        var oldEntriesNegative = data.Where(a => a is { NewEntry: false, SharesChange: < 0 }).ToList();
+        var oldEntriesPositive = data.Where(
+            a => a is { NewEntry: false, SharesChange: >= 0 }).ToList();
+        var oldEntriesNegative = data.Where(
+            a => a is { NewEntry: false, SharesChange: < 0 }).ToList();
 
         //change shares to absolute number - would be negative - comment if not wanted
         oldEntriesNegative.ForEach(a => a.SharesChange = double.Abs(a.SharesChange));
 
-        var finalPath = Path.Combine(path, name + ".csv");
-        //TODO check path format?
+        var finalPath = Path.Combine(path, name + Const.CsvExtension);
         try
         {
             await using var fileWriter = new StreamWriter(finalPath);
             {
-                //set separator in csv for it to be readable
                 await fileWriter.WriteAsync("sep=" + Const.CsvSeparator + "\n");
-                WriteDiffPositions(fileWriter, newEntries, "New", "");
-                WriteDiffPositions(fileWriter, oldEntriesPositive, "Increased", Const.CsvSharesUpIndicator);
-                WriteDiffPositions(fileWriter, oldEntriesNegative, "Reduced", Const.CsvSharesDownIndicator);
+                await WriteDiffPositions(fileWriter, newEntries, "New", "");
+                await WriteDiffPositions(fileWriter, oldEntriesPositive, "Increased", Const.CsvSharesUpIndicator);
+                await WriteDiffPositions(fileWriter, oldEntriesNegative, "Reduced", Const.CsvSharesDownIndicator);
             }
-            return true;
         }
-        catch (Exception e) when (e is NotSupportedException
-                                      or IOException
-                                      or InvalidOperationException)
+        catch (Exception e)
         {
-            return false;
+            throw new DiffStoreException(e.Message);
         }
         finally
         {
@@ -41,8 +38,8 @@ public class DiffStore : IDiffStore
         }
     }
 
-    private static async void WriteDiffPositions(StreamWriter fileWriter, List<DiffData> entries, string type,
-        string sharesFormat)
+    private static async Task WriteDiffPositions(TextWriter fileWriter, IEnumerable<DiffData> entries,
+                                                 string type, string sharesFormat)
     {
         await fileWriter.WriteAsync(CreateCsvHeader(type, sharesFormat));
         foreach (var entry in entries)

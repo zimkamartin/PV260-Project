@@ -1,4 +1,8 @@
 using StockAnalysis.Constants;
+using StockAnalysis.Diff.Compute;
+using StockAnalysis.Diff.Load;
+using StockAnalysis.Diff.Store;
+using StockAnalysis.Download;
 using StockAnalysis.Download.Getter;
 using StockAnalysis.Download.PeriodicalDownload;
 using StockAnalysis.Download.Store;
@@ -36,15 +40,17 @@ namespace StockAnalysisConsole
                     SenderMail,
                     true,
                     ClientHost));
-
-            var manager = new AnalysisManager(new CsvDownload(),
-                new CsvStorage()
-            );
-
-            // Create client for download.
+            
             using var client = new HttpClient();
             client.DefaultRequestHeaders.Add("User-Agent", "Other");
+
+            var downloadManager =
+                new DownloadManager(Paths.GetDownloadFolderPath(), new CsvDownload(), 
+                                new CsvStorage(), client);
             
+            var manager = new AnalysisManager(downloadManager, new CsvDiffComputer(new CsvHoldingLoader()), 
+                                                new CsvDiffStore());
+
             List<string> diffPaths;
             try
             {
@@ -128,9 +134,10 @@ namespace StockAnalysisConsole
                 await sender.SendNotification(addresses, diffPaths);
                 Console.WriteLine("E-mails sent. Check your inbox.");
             }
-            catch (Exception)
+            catch (SenderException)
             {
                 Console.WriteLine("Email sending failed.");
+                return;
             }
         }
     }

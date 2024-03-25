@@ -32,9 +32,9 @@ public class Sender : ISender
                 message.Attachments.Add(new Attachment(ap));
             }
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            throw;
+            throw new SenderException(e.Message);
         }
 
         return message;
@@ -47,9 +47,9 @@ public class Sender : ISender
         {
             message = ComposeMessage(recipients, attachmentPaths);
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            throw;
+            throw new SenderException(e.Message);
         }
 
         var client = _generator.GenerateClient();
@@ -57,10 +57,9 @@ public class Sender : ISender
         {
             await client.SendMailAsync(message);
         }
-        catch (SmtpException)
+        catch (SmtpException e)
         {
-            Console.WriteLine("There was an Smtp exception, most probably the password was set wrongly.");
-            throw;
+            throw new SenderException(e.Message);
         }
     }
 }

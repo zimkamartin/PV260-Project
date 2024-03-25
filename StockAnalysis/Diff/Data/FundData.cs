@@ -1,6 +1,6 @@
 using CsvHelper.Configuration.Attributes;
 
-namespace StockAnalysis.Diff;
+namespace StockAnalysis.Diff.Data;
 
 public class FundData
 {
