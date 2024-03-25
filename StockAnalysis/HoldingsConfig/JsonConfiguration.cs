@@ -3,20 +3,11 @@ using StockAnalysis.Download;
 
 namespace StockAnalysis.HoldingsConfig;
 
-public interface IConfiguration
+public class JsonConfiguration : IConfiguration
 {
-    /// <summary>
-    /// Loads a configuration of the different holdings that must be retrieved and analyzed.
-    /// </summary>
-    /// <returns>Information about the required holdings.</returns>
-    Task<IEnumerable<HoldingInformation>> LoadConfiguration();
-}
+    private string ConfigurationPath { get; }
 
-public class Configuration : IConfiguration
-{
-    private string ConfigurationPath { get; set; }
-
-    public Configuration(string configurationPath)
+    public JsonConfiguration(string configurationPath)
     {
         ConfigurationPath = configurationPath;
     }
@@ -26,13 +17,8 @@ public class Configuration : IConfiguration
     /// that corresponds with the 
     /// </summary>
     /// <returns>Information about desired ETF holdings in an array. Can be empty if an issue arose during loading.</returns>
-    /// <exception cref="DirectoryNotFoundException">The directory (and therefore the file) of the configuration file does not exist.</exception>
-    /// <exception cref="PathTooLongException">The path to the configuration file is too long.</exception>
-    /// <exception cref="UnauthorizedAccessException">The program can't access the configuration file.</exception>
-    /// <exception cref="NotSupportedException">The configuration could not be serialized.</exception>
-    /// <exception cref="IOException">An I/O error occured while opening the configuration file.</exception>
-    /// <exception cref="FileNotFoundException">The supplied configuration file does not exist.</exception>
-    public async Task<HoldingInformation[]> LoadConfiguration()
+    /// <exception cref="ConfigurationException">Configuration load failed.</exception>
+    public async Task<IEnumerable<HoldingInformation>> LoadConfiguration()
     {
         try
         {
@@ -45,9 +31,9 @@ public class Configuration : IConfiguration
         {
             return Array.Empty<HoldingInformation>();
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            throw;
+            throw new ConfigurationException(e.Message);
         }
     }
 }
