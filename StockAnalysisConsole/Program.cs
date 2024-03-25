@@ -15,9 +15,9 @@ namespace StockAnalysisConsole
 {
     internal static class Program
     {
-        private const string ClientHost = "smtp.gmail.com";
+        private const string ClientHost = "smtp-mail.outlook.com";
         private const int SmtpPort = 587;
-        private const string SenderMail = "pv260.s24.goth.pinkteam@gmail.com";
+        private const string SenderMail = "stockanalyzer-pink@outlook.com";
 
         public static async Task Main()
         {
@@ -125,20 +125,20 @@ namespace StockAnalysisConsole
         /// <summary>
         /// Sends e-mails to recipients.
         /// </summary>
-        private static async Task SendEmails(ISender sender, IEnumerable<string> addresses, IEnumerable<string> diffPaths)
+        private static async Task SendEmails(ISender sender, IEnumerable<string> addresses,
+                                             IEnumerable<string> diffPaths)
         {
             try
             {
                 Console.WriteLine("Analysis completed. Sending e-mails... ");
                 await sender.SendNotification(addresses, diffPaths);
+                Console.WriteLine("E-mails sent. Check your inbox.");
             }
             catch (SenderException)
             {
                 Console.WriteLine("Email sending failed.");
                 return;
             }
-
-            Console.WriteLine("E-mails sent. Check your inbox.");
         }
     }
 }
