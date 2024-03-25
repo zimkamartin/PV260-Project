@@ -47,6 +47,7 @@ public class PeriodicalDownloaderTest
         var analysisManagerMock = new Mock<AnalysisManager>(manager, 
                                                             new CsvDiffComputer(new CsvHoldingLoader()),
                                                             new CsvDiffStore());
+        // ReSharper disable once AccessToDisposedClosure
         analysisManagerMock.Setup(x => x.PerformAnalysis(client, extension, period)).ReturnsAsync(new List<string>());
 
         var dateTimeProviderMock = new Mock<IDateTimeProvider>();
@@ -54,7 +55,9 @@ public class PeriodicalDownloaderTest
 
         var periodicalDownloaderMock =
             new Mock<PeriodicalDownloader>(period, dateTimeProviderMock.Object, holdings, client, extension,
+#pragma warning disable CS8974 // Converting method group to non-delegate type
                 analysisManagerMock.Object.PerformAnalysis);
+#pragma warning restore CS8974 // Converting method group to non-delegate type
 
         // Act
         var timer = periodicalDownloaderMock.Object.SchedulePeriodicDownload();
@@ -65,6 +68,7 @@ public class PeriodicalDownloaderTest
         timer.Dispose();
 
         // Assert
+        // ReSharper disable once AccessToDisposedClosure
         analysisManagerMock.Verify(x => x.PerformAnalysis(client, extension, period), Times.AtLeast(count));
     }
 }
