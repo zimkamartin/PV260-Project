@@ -8,31 +8,30 @@ public class DownloadManager
 {
     private readonly IGetter _getter;
     private readonly IStore _storage;
-    public string StoragePath { get; set; }
+    private readonly HttpClient _client;
+    private string StoragePath { get; }
 
-    public DownloadManager(string storagePath, IGetter getter, IStore store)
+    public DownloadManager(string storagePath, IGetter getter, IStore store, HttpClient client)
     {
         StoragePath = storagePath;
         _getter = getter;
         _storage = store;
+        _client = client;
     }
 
     /// <summary>
     /// Orchestrates the download process for a group of holdings.
     /// </summary>
     /// <param name="holdings">Information about the desired holdings - used for download and file storage names.</param>
-    /// <param name="client">HttpClient used to make the download requests. This method does not modify the client. The client may need to have the default request header for "User-Agent" set to "Other" for the download to work!</param>
     /// <param name="storageDirectory">The name of the specific directory a given file is stored into. Will be created if it does not exist yet.</param>
     /// <returns>Boolean value determining whether the whole process succeeded. Note - it may happen that some files are successfully stored before a failure occurs. The method stops at the first failure.</returns>
-    public async Task<bool> GetHoldings(IEnumerable<HoldingInformation> holdings,
-        HttpClient client,
-        string storageDirectory)
+    public async Task<bool> GetHoldings(IEnumerable<HoldingInformation> holdings, string storageDirectory)
     {
         try
         {
             foreach (var uri in holdings)
             {
-                await using var stream = await _getter.Get(uri.Uri, client);
+                await using var stream = await _getter.Get(uri.Uri, _client);
                 if (!await _storage.Store(stream, StoragePath, storageDirectory, uri.Name))
                 {
                     return false;
