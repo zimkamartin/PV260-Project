@@ -1,4 +1,4 @@
-namespace StockAnalysis.Diff;
+namespace StockAnalysis.Diff.Data;
 
 public class DiffData
 {

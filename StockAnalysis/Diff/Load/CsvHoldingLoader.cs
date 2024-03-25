@@ -1,19 +1,27 @@
 using System.Globalization;
 using CsvHelper;
+using StockAnalysis.Diff.Data;
 
-namespace StockAnalysis.Diff;
+namespace StockAnalysis.Diff.Load;
 
-public class HoldingLoader : IHoldingLoader
+public class CsvHoldingLoader : IHoldingLoader
 {
     /// <summary>
-    /// Loads data from (now) a csv file.
-    /// In the future, it could be extended to load data from other sources.
+    /// Loads data from a csv file.
     /// </summary>
-    private static List<FundData> LoadData(string filename)
+    public IEnumerable<FundData> LoadData(string path)
     {
-        using var reader = new StreamReader(filename);
-        // TODO: We are passing .csv extension to PerformAnalysis, but here we are not checking it
-        using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
-        return csv.GetRecords<FundData>().ToList();
+        try
+        {
+            using var reader = new StreamReader(path);
+            using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+            return csv.GetRecords<FundData>().ToList();
+        }
+        catch (Exception e)
+        {
+            throw new HoldingLoaderException(e.Message, e.InnerException);
+        }
+
+        
     }
 }
