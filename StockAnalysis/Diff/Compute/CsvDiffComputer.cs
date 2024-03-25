@@ -1,79 +1,58 @@
-﻿using CsvHelper;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text.RegularExpressions;
+using StockAnalysis.Diff.Data;
+using StockAnalysis.Diff.Load;
 
-namespace StockAnalysis.Diff;
+namespace StockAnalysis.Diff.Compute;
 
-public static class DiffComputer
+public class CsvDiffComputer : IDiffCompute
 {
+    private readonly IHoldingLoader _loader;
+
+    public CsvDiffComputer(IHoldingLoader loader)
+    {
+        _loader = loader;
+    }
+    
     /// <summary>
     /// Creates a diff between two csv files and returns the changes.
     /// </summary>
-    public static List<DiffData> CreateDiff(string newFile, string? oldFile)
+    public IEnumerable<DiffData> CreateDiff(string newFile, string? oldFile)
     {
-        string filename = Path.GetFileName(newFile);
+        var filename = Path.GetFileName(newFile);
 
-        // If path to old diff is null or file with it does not exists, diff is computed against default one
         if (oldFile == null || !(Path.Exists(oldFile)))
         {
             oldFile = Path.GetDirectoryName(Path.GetDirectoryName(newFile)) + Path.DirectorySeparatorChar +
                       "Default" + Path.DirectorySeparatorChar + filename;
         }
 
-        if (filename != Path.GetFileName(oldFile))
-        {
-            throw new ArgumentException("Different files cannot be compared");
-        }
-
-        if (!Path.Exists(newFile))
-        {
-            throw new ArgumentException("File with new data does not exist");
-        }
-
-
-        // Try to load old/default csv, data empty if neither exists
-        var oldData = new List<FundData>();
+        List<FundData> oldData = new();
         try
         {
-            oldData = LoadData(oldFile);
+            oldData = _loader.LoadData(oldFile).ToList();
         }
-        // Not sure about "FileNotFoundException" - something more general?
-        // What if "Default" folder doesn't exist? 
         catch (Exception)
         {
-            // Do nothing - empty list already initialized
+            // ignored
         }
 
         try
         {
-            // Load new data
-            var newData = LoadData(newFile);
-            // Compute changes
+            var newData = _loader.LoadData(newFile).ToList();
             return ComputeChanges(oldData, newData);
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            // TODO: Should it be ArgumentException?
-            throw new ArgumentException("Creating diff failed.");
+            throw new DiffComputeException(e.Message);
         }
-    }
-
-    /// <summary>
-    /// Loads data from (now) a csv file.
-    /// In the future, it could be extended to load data from other sources.
-    /// </summary>
-    private static List<FundData> LoadData(string filename)
-    {
-        using var reader = new StreamReader(filename);
-        // TODO: We are passing .csv extension to PerformAnalysis, but here we are not checking it
-        using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
-        return csv.GetRecords<FundData>().ToList();
     }
 
     /// <summary>
     /// Computes the changes between two sets of data.
     /// </summary>
-    public static List<DiffData> ComputeChanges(List<FundData> oldData, List<FundData> newData)
+    public static IEnumerable<DiffData> ComputeChanges(List<FundData> oldData, 
+                                                       List<FundData> newData)
     {
         return (from newDataEntry in newData
                 let oldDataEntry = oldData.FirstOrDefault(x => x.Ticker == newDataEntry.Ticker)

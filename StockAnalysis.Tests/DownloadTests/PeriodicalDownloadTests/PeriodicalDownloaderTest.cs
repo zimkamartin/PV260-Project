@@ -1,11 +1,16 @@
 using Moq;
 using StockAnalysis.Constants;
+using StockAnalysis.Diff.Compute;
+using StockAnalysis.Diff.Load;
+using StockAnalysis.Diff.Store;
+using StockAnalysis.Download;
 using StockAnalysis.Download.Getter;
 using StockAnalysis.Download.PeriodicalDownload;
 using StockAnalysis.Download.Store;
 using StockAnalysis.HoldingsConfig;
 using StockAnalysis.Utilities;
 using StockAnalysisConsole;
+using StockAnalysisConsole.Utils.Paths;
 
 namespace StockAnalysisTests.DownloadTests.PeriodicalDownloadTests;
 
@@ -34,7 +39,14 @@ public class PeriodicalDownloaderTest
         var interval = TimeSpan.FromSeconds(1);
         var period = new Period(start, interval);
 
-        var analysisManagerMock = new Mock<AnalysisManager>(new CsvDownload(), new CsvStorage());
+        var manager = new DownloadManager(Paths.GetDownloadFolderPath(), 
+                                            new CsvDownload(),
+                                            new CsvStorage(),
+                                            client);
+        
+        var analysisManagerMock = new Mock<AnalysisManager>(manager, 
+                                                            new CsvDiffComputer(new CsvHoldingLoader()),
+                                                            new CsvDiffStore());
         analysisManagerMock.Setup(x => x.PerformAnalysis(client, extension, period)).ReturnsAsync(new List<string>());
 
         var dateTimeProviderMock = new Mock<IDateTimeProvider>();
