@@ -28,7 +28,7 @@ public class HtmlDiffStore : IDiffStore
             await WriteDiffPositions(fileWriter, oldEntriesPositive, "Increased positions");
             await WriteDiffPositions(fileWriter, oldEntriesNegative, "Reduced positions");
             
-            await fileWriter.WriteAsync("</body>\n</html>");
+            await fileWriter.WriteAsync("</body>\n</html>\n");
         }
         catch (Exception e)
         {
