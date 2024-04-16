@@ -1,5 +1,5 @@
-using StockAnalysis.Download;
 using StockAnalysis.Download.Getter;
+using StockAnalysis.Download.Manager;
 using StockAnalysis.Download.Store;
 using StockAnalysis.HoldingsConfig;
 
