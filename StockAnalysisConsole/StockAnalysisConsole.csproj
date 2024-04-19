@@ -15,4 +15,8 @@
       <Folder Include="Diff\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="ApprovalTests" Version="7.0.0-beta.1" />
+    </ItemGroup>
+
 </Project>
