@@ -8,6 +8,8 @@ public static class DiffStoreCreator
         {
             case "csv":
                 return new CsvDiffStore();
+            case "html":
+                return new HtmlDiffStore();
             default:
                 throw new NotImplementedException("Chosen output extension is currently not supported.");
         }

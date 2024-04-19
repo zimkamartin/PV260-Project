@@ -49,7 +49,7 @@ public class PeriodicalDownloaderTest
                                                             new CsvDiffComputer(new CsvHoldingLoader()),
                                                             new CsvDiffStore());
         // ReSharper disable once AccessToDisposedClosure
-        analysisManagerMock.Setup(x => x.PerformAnalysis(client, extension, period)).ReturnsAsync(new List<string>());
+        analysisManagerMock.Setup(x => x.PerformAnalysis(client, extension, extension, period)).ReturnsAsync(new List<string>());
 
         var dateTimeProviderMock = new Mock<IDateTimeProvider>();
         dateTimeProviderMock.Setup(x => x.UtcNow()).Returns(start);
@@ -70,6 +70,6 @@ public class PeriodicalDownloaderTest
 
         // Assert
         // ReSharper disable once AccessToDisposedClosure
-        analysisManagerMock.Verify(x => x.PerformAnalysis(client, extension, period), Times.AtLeast(count));
+        analysisManagerMock.Verify(x => x.PerformAnalysis(client, extension, extension, period), Times.AtLeast(count));
     }
 }
