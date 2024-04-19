@@ -27,10 +27,8 @@ public class HtmlDiffStoreTests
     {
         //arrange
         IDiffStore storage = new HtmlDiffStore();
-        IDiffCompute computer = new CsvDiffComputer(new CsvHoldingLoader());
-        var data = computer.CreateDiff(
-            Path.Combine(_testdataRoot!, "testfiles_new", "test.csv"), 
-            null);
+        var data = MockDiffData();
+        
         var totalPath = Path.Join(_testdataRoot, "test_diff.html");
         //act
         await storage.StoreDiff(data, _testdataRoot!, "test_diff");
@@ -87,7 +85,32 @@ public class HtmlDiffStoreTests
         File.Delete(totalPath);
         Assert.That(File.Exists(totalPath), Is.False);
     }
-    
+
+    private IEnumerable<DiffData> MockDiffData()
+    {
+        return new List<DiffData>
+        {
+            new DiffData
+            {
+                Company = "Skoda",
+                Ticker = "SK",
+                SharesChange = 1.11,
+                MarketValueChange = 11.1,
+                Weight = 123,
+                NewEntry = true
+            },
+            new DiffData
+            {
+                Company = "Volkswagen",
+                Ticker = "VW",
+                SharesChange = -5,
+                MarketValueChange = -3.33,
+                Weight = 17,
+                NewEntry = true
+            }
+        };
+    }
+
     private async Task StoreDiff_AssertDiffPositionsExtracted(StreamReader reader, List<DiffData> entries, string header)
     {
         var line = await reader.ReadLineAsync();
