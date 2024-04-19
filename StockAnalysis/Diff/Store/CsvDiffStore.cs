@@ -1,4 +1,5 @@
 ﻿using StockAnalysis.Diff.Data;
+using StockAnalysis.Utilities;
 using Const = StockAnalysis.Constants.Constants;
 
 namespace StockAnalysis.Diff.Store;
@@ -7,13 +8,8 @@ public class CsvDiffStore : IDiffStore
 {
     public async Task StoreDiff(IEnumerable<DiffData> data, string path, string name)
     {
-        //divide data to new, old, new entries
-        var newEntries = data.Where(a => a.NewEntry).ToList();
-        var oldEntriesPositive = data.Where(
-            a => a is { NewEntry: false, SharesChange: >= 0 }).ToList();
-        var oldEntriesNegative = data.Where(
-            a => a is { NewEntry: false, SharesChange: < 0 }).ToList();
-
+        //divide data to new, oldPositive, oldNegative entries
+        var (newEntries, oldEntriesPositive, oldEntriesNegative) = DataExtractor.ExtractEntries(data);
         //change shares to absolute number - would be negative - comment if not wanted
         oldEntriesNegative.ForEach(a => a.SharesChange = double.Abs(a.SharesChange));
 
