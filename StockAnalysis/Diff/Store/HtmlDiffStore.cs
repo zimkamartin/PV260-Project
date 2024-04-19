@@ -1,6 +1,7 @@
 using StockAnalysis.Diff.Data;
 using StockAnalysis.Utilities;
 using Const = StockAnalysis.Constants.Constants;
+using System.Text;
 
 namespace StockAnalysis.Diff.Store;
 
@@ -18,13 +19,16 @@ public class HtmlDiffStore : IDiffStore
         {
             await using var fileWriter = new StreamWriter(finalPath);
             
-            await fileWriter.WriteAsync("<html>\n<body>\n");
+            //firstly build the whole output, write it to the file only at the end
+            var toWrite = new StringBuilder("<html>\n<body>\n");
 
-            await WriteDiffPositions(fileWriter, newEntries, "New positions");
-            await WriteDiffPositions(fileWriter, oldEntriesPositive, "Increased positions");
-            await WriteDiffPositions(fileWriter, oldEntriesNegative, "Reduced positions");
+            WriteDiffPositions(toWrite, newEntries, "New positions");
+            WriteDiffPositions(toWrite, oldEntriesPositive, "Increased positions");
+            WriteDiffPositions(toWrite, oldEntriesNegative, "Reduced positions");
+
+            toWrite.Append("</body>\n</html>\n");
             
-            await fileWriter.WriteAsync("</body>\n</html>\n");
+            await fileWriter.WriteAsync(toWrite);
         }
         catch (Exception e)
         {
@@ -36,23 +40,21 @@ public class HtmlDiffStore : IDiffStore
         }
     }
 
-    private static async Task WriteDiffPositions(TextWriter fileWriter, List<DiffData> entries,
-                                                 string header)
+    private static void WriteDiffPositions(StringBuilder output, List<DiffData> entries, string header)
     {
-        await fileWriter.WriteAsync($"<h2>{header}</h2>\n");
+        output.Append($"<h2>{header}</h2>\n");
         
         if (entries.Count == 0)
         {
             return;
         }
 
-        await fileWriter.WriteAsync("<table border=1 frame=void rules=rows,columns>\n");
-        await fileWriter.WriteAsync(
-            "<tr><th>Company name</th><th>ticker</th><th>#shares</th><th>weight(%)</th></tr>\n");
+        output.Append("<table border=1 frame=void rules=rows,columns>\n");
+        output.Append("<tr><th>Company name</th><th>ticker</th><th>#shares</th><th>weight(%)</th></tr>\n");
         foreach (var e in entries)
         {
-            await fileWriter.WriteAsync($"<tr><td>{e.Company}</td><td>{e.Ticker}</td><td>{e.SharesChange}</td><td>{e.Weight}</td></tr>\n");
+            output.Append($"<tr><td>{e.Company}</td><td>{e.Ticker}</td><td>{e.SharesChange}</td><td>{e.Weight}</td></tr>\n");
         }
-        await fileWriter.WriteAsync("</table>\n");
+        output.Append("</table>\n");
     }
 }
