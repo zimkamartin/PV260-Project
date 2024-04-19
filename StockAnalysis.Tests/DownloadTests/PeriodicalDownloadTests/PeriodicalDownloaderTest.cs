@@ -55,7 +55,8 @@ public class PeriodicalDownloaderTest
         dateTimeProviderMock.Setup(x => x.UtcNow()).Returns(start);
 
         var periodicalDownloaderMock =
-            new Mock<PeriodicalDownloader>(period, dateTimeProviderMock.Object, holdings, client, extension,
+            new Mock<PeriodicalDownloader>(period, dateTimeProviderMock.Object, holdings, client, extension, 
+                extension,
 #pragma warning disable CS8974 // Converting method group to non-delegate type
                 analysisManagerMock.Object.PerformAnalysis);
 #pragma warning restore CS8974 // Converting method group to non-delegate type
