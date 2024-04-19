@@ -3,6 +3,7 @@ using StockAnalysis.Diff.Compute;
 using StockAnalysis.Diff.Data;
 using StockAnalysis.Diff.Load;
 using StockAnalysis.Diff.Store;
+using StockAnalysis.Utilities;
 
 namespace StockAnalysisTests.DiffTests;
 
@@ -57,11 +58,9 @@ public class HtmlDiffStoreTests
         await storage.StoreDiff(diffData, _testdataRoot!, "test_diff");
         using var reader = new StreamReader(totalPath);
         
-        var newEntries = data.Where(a => a.NewEntry).ToList();
-        var oldEntriesPositive = data.Where(
-            a => a is { NewEntry: false, SharesChange: >= 0 }).ToList();
-        var oldEntriesNegative = data.Where(
-            a => a is { NewEntry: false, SharesChange: < 0 }).ToList();
+        //divide data to new, oldPositive, oldNegative entries
+        var (newEntries, oldEntriesPositive, oldEntriesNegative) = DataExtractor.ExtractEntries(data);
+        //change shares to absolute number - would be negative - comment if not wanted
         oldEntriesNegative.ForEach(a => a.SharesChange = double.Abs(a.SharesChange));
         
         //assert
