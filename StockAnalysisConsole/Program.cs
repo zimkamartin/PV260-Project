@@ -4,6 +4,7 @@ using StockAnalysis.Diff.Load;
 using StockAnalysis.Diff.Store;
 using StockAnalysis.Download;
 using StockAnalysis.Download.Getter;
+using StockAnalysis.Download.Manager;
 using StockAnalysis.Download.PeriodicalDownload;
 using StockAnalysis.Download.Store;
 using StockAnalysis.Sending.ClientGenerator;
@@ -15,14 +16,30 @@ namespace StockAnalysisConsole
 {
     internal static class Program
     {
-        private const string ClientHost = "smtp-mail.outlook.com";
-        private const int SmtpPort = 587;
-        private const string SenderMail = "stockanalyzer-pink@outlook.com";
+        private static string _clientHost = "smtp-mail.outlook.com";
+        private static int _smtpPort = 587;
+        private static string _senderMail = "stockanalyzer-pink@outlook.com";
 
         public static async Task Main()
         {
             Console.WriteLine("Welcome to StockAnalysis.");
 
+            _clientHost = Environment.GetEnvironmentVariable("CLIENT_HOST") ?? string.Empty;
+            var port = Environment.GetEnvironmentVariable("SMTP_PORT");
+            if (!int.TryParse(port, out _smtpPort))
+            {
+                Console.WriteLine("Failed to retrieve smtp port, exiting.");
+                return;
+            }
+            _senderMail = Environment.GetEnvironmentVariable("SENDER_MAIL") ?? string.Empty;
+            if (_clientHost.Length == 0 || _senderMail.Length == 0)
+            {
+                Console.WriteLine("Configuration not set correctly, exiting. " +
+                                  "Check if all environment variables are set correctly.");
+                return;
+            }
+            
+            
             var addresses = await LoadAddresses();
             if (!addresses.Any())
             {
@@ -35,21 +52,31 @@ namespace StockAnalysisConsole
             Console.WriteLine("Starting analyzer. ");
 
             // Create sender and manager.
-            var sender = new Sender(SenderMail,
-                new SmtpClientGenerator(SmtpPort,
-                    SenderMail,
+            var sender = new Sender(_senderMail,
+                new SmtpClientGenerator(_smtpPort,
+                    _senderMail,
                     true,
-                    ClientHost));
+                    _clientHost));
             
             using var client = new HttpClient();
             client.DefaultRequestHeaders.Add("User-Agent", "Other");
 
-            var downloadManager =
-                new DownloadManager(Paths.GetDownloadFolderPath(), new CsvDownload(), 
-                                new CsvStorage(), client);
-            
-            var manager = new AnalysisManager(downloadManager, new CsvDiffComputer(new CsvHoldingLoader()), 
-                                                new CsvDiffStore());
+            var inputExtension = Environment.GetEnvironmentVariable("INPUT_EXTENSION") ?? "unknown";
+            var outputExtension = Environment.GetEnvironmentVariable("OUTPUT_EXTENSION") ?? "unknown";
+            AnalysisManager manager;
+            try
+            {
+                var downloadManager =
+                    ManagerCreator.CreateManager(Paths.GetDownloadFolderPath(), client, inputExtension);
+                manager = new AnalysisManager(downloadManager,
+                    DiffComputerCreator.CreateComputer(inputExtension),
+                    DiffStoreCreator.CreateStore(outputExtension));
+            }
+            catch (NotImplementedException e)
+            {
+                Console.WriteLine(e.Message);
+                return;
+            }
 
             List<string> diffPaths;
             try

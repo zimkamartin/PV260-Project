@@ -5,6 +5,7 @@ using StockAnalysis.Diff.Load;
 using StockAnalysis.Diff.Store;
 using StockAnalysis.Download;
 using StockAnalysis.Download.Getter;
+using StockAnalysis.Download.Manager;
 using StockAnalysis.Download.PeriodicalDownload;
 using StockAnalysis.Download.Store;
 using StockAnalysis.HoldingsConfig;

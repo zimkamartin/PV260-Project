@@ -2,7 +2,7 @@ using StockAnalysis.Download.Getter;
 using StockAnalysis.Download.Store;
 using StockAnalysis.HoldingsConfig;
 
-namespace StockAnalysis.Download;
+namespace StockAnalysis.Download.Manager;
 
 public class DownloadManager
 {
