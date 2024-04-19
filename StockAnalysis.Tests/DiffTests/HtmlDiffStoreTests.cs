@@ -1,9 +1,9 @@
-﻿using StockAnalysis.Constants;
-using StockAnalysis.Diff.Compute;
+﻿using StockAnalysis.Diff.Compute;
 using StockAnalysis.Diff.Data;
 using StockAnalysis.Diff.Load;
 using StockAnalysis.Diff.Store;
 using StockAnalysis.Utilities;
+using ApprovalTests;
 
 namespace StockAnalysisTests.DiffTests;
 
@@ -31,6 +31,7 @@ public class HtmlDiffStoreTests
         var data = MockDiffData();
         
         var totalPath = Path.Join(_testdataRoot, "test_diff.html");
+        
         //act
         await storage.StoreDiff(data, _testdataRoot!, "test_diff");
 
@@ -47,15 +48,12 @@ public class HtmlDiffStoreTests
     {
         // Arrange
         IDiffStore storage = new HtmlDiffStore();
-        IDiffCompute computer = new CsvDiffComputer(new CsvHoldingLoader());
-        var data = computer.CreateDiff(
-            Path.Combine(_testdataRoot!, "testfiles_new", "test.csv"),
-            Path.Combine(_testdataRoot!, "testfiles_old", "test.csv"));
-        var diffData = data.ToList();
+        var data = MockDiffData();
+        
         var totalPath = Path.Join(_testdataRoot, "test_diff.html");
 
         //act
-        await storage.StoreDiff(diffData, _testdataRoot!, "test_diff");
+        await storage.StoreDiff(data, _testdataRoot!, "test_diff");
         using var reader = new StreamReader(totalPath);
         
         //divide data to new, oldPositive, oldNegative entries
