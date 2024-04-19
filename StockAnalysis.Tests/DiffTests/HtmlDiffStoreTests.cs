@@ -4,6 +4,7 @@ using StockAnalysis.Diff.Load;
 using StockAnalysis.Diff.Store;
 using StockAnalysis.Utilities;
 using ApprovalTests;
+using ApprovalTests.Reporters;
 
 namespace StockAnalysisTests.DiffTests;
 
@@ -54,31 +55,32 @@ public class HtmlDiffStoreTests
 
         //act
         await storage.StoreDiff(data, _testdataRoot!, "test_diff");
-        using var reader = new StreamReader(totalPath);
+        //using var reader = new StreamReader(totalPath);
         
         //divide data to new, oldPositive, oldNegative entries
         var (newEntries, oldEntriesPositive, oldEntriesNegative) = DataExtractor.ExtractEntries(data);
         //change shares to absolute number - would be negative - comment if not wanted
         oldEntriesNegative.ForEach(a => a.SharesChange = double.Abs(a.SharesChange));
-        
+
         //assert
-        var line = await reader.ReadLineAsync();
-        Assert.That(line, Is.EqualTo("<html>"));
-        line = await reader.ReadLineAsync();
-        Assert.That(line, Is.EqualTo("<body>"));
-        
-        await StoreDiff_AssertDiffPositionsExtracted(reader, newEntries, "New positions");
-        await StoreDiff_AssertDiffPositionsExtracted(reader, oldEntriesPositive, "Increased positions");
-        await StoreDiff_AssertDiffPositionsExtracted(reader, oldEntriesNegative, "Reduced positions");
-        
-        line = await reader.ReadLineAsync();
-        Assert.That(line, Is.EqualTo("</body>"));
-        line = await reader.ReadLineAsync();
-        Assert.That(line, Is.EqualTo("</html>"));
-        
+        Approvals.VerifyFile(totalPath);
+        // var line = await reader.ReadLineAsync();
+        // Assert.That(line, Is.EqualTo("<html>"));
+        // line = await reader.ReadLineAsync();
+        // Assert.That(line, Is.EqualTo("<body>"));
+        //
+        // await StoreDiff_AssertDiffPositionsExtracted(reader, newEntries, "New positions");
+        // await StoreDiff_AssertDiffPositionsExtracted(reader, oldEntriesPositive, "Increased positions");
+        // await StoreDiff_AssertDiffPositionsExtracted(reader, oldEntriesNegative, "Reduced positions");
+        //
+        // line = await reader.ReadLineAsync();
+        // Assert.That(line, Is.EqualTo("</body>"));
+        // line = await reader.ReadLineAsync();
+        // Assert.That(line, Is.EqualTo("</html>"));
+        //
         //cleanup
         oldEntriesNegative.ForEach(a => a.SharesChange = -a.SharesChange);
-        reader.Close();
+        //reader.Close();
         File.Delete(totalPath);
         Assert.That(File.Exists(totalPath), Is.False);
     }
@@ -112,12 +114,12 @@ public class HtmlDiffStoreTests
     {
         var line = await reader.ReadLineAsync();
         Assert.That(line, Is.EqualTo($"<h2>{header}</h2>"));
-
+    
         if (entries.Count == 0)
         {
             return;
         }
-
+    
         line = await reader.ReadLineAsync();
         Assert.That(line, Is.EqualTo("<table border=1 frame=void rules=rows,columns>"));
         line = await reader.ReadLineAsync();
