@@ -31,7 +31,7 @@ public class HtmlDiffStoreTests
         var data = computer.CreateDiff(
             Path.Combine(_testdataRoot!, "testfiles_new", "test.csv"), 
             null);
-        var totalPath = Path.Join(_testdataRoot, "test_diff.csv");
+        var totalPath = Path.Join(_testdataRoot, "test_diff.html");
         //act
         await storage.StoreDiff(data, _testdataRoot!, "test_diff");
 
@@ -53,7 +53,7 @@ public class HtmlDiffStoreTests
             Path.Combine(_testdataRoot!, "testfiles_new", "test.csv"),
             Path.Combine(_testdataRoot!, "testfiles_old", "test.csv"));
         var diffData = data.ToList();
-        var totalPath = Path.Join(_testdataRoot, "test_diff.csv");
+        var totalPath = Path.Join(_testdataRoot, "test_diff.html");
 
         //act
         await storage.StoreDiff(diffData, _testdataRoot!, "test_diff");
