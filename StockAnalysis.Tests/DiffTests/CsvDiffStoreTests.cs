@@ -1,6 +1,5 @@
 ﻿using StockAnalysis.Constants;
 using StockAnalysis.Diff.Compute;
-using StockAnalysis.Diff.Data;
 using StockAnalysis.Diff.Load;
 using StockAnalysis.Diff.Store;
 
