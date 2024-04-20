@@ -1,6 +1,5 @@
 using StockAnalysis.Diff.Compute;
 using StockAnalysis.Diff.Store;
-using StockAnalysis.Download;
 using StockAnalysis.Download.Manager;
 using StockAnalysis.Download.PeriodicalDownload;
 using StockAnalysis.HoldingsConfig;
@@ -75,7 +74,7 @@ public class AnalysisManager
     /// Performs diffs for all holdings.
     /// </summary>
     private async Task<List<string>> PerformDiffs(IEnumerable<HoldingInformation> holdings,
-        string storageDir, string extension, Period? period)
+        string storageDir, string inExtension, string outExtension, Period? period)
     {
         var diffPaths = new List<string>();
 
@@ -88,13 +87,13 @@ public class AnalysisManager
 
         foreach (var holding in holdings)
         {
-            var holdingPath = GetPath(holding, storageDir, extension);
+            var holdingPath = GetPath(holding, storageDir, inExtension);
             var holdingPathOld = period != null && Directory.Exists(oldStorageDir)
                 ? null
-                : GetPath(holding, oldStorageDir, extension);
+                : GetPath(holding, oldStorageDir, inExtension);
 
             await PerformDiff(holding, holdingPath, holdingPathOld);
-            diffPaths.Add(Path.Combine(diffFolder, holding.Name + extension));
+            diffPaths.Add(Path.Combine(diffFolder, holding.Name + outExtension));
         }
 
         return diffPaths;
@@ -114,7 +113,7 @@ public class AnalysisManager
     /// It is virtual because it is meant to be overridden in tests.
     /// </summary>
     /// <returns>Paths of diffs.</returns>
-    public virtual async Task<List<string>> PerformAnalysis(HttpClient client, string extension, Period? period)
+    public virtual async Task<List<string>> PerformAnalysis(HttpClient client, string outExtension, string inExtension, Period? period)
     {
         var holdings = (await _config.LoadConfiguration()).ToList();
         // When Period is set, "now" can be obtained from it. But not every time.
@@ -124,13 +123,15 @@ public class AnalysisManager
             return new List<string>();
         }
 
-        return await PerformDiffs(holdings, storageDir, extension, period);
+        return await PerformDiffs(holdings, storageDir, inExtension, outExtension, period);
     }
     
-    public async Task PerformAnalysisPeriodically(HttpClient client, string extension, Period period)
+    /// <summary>
+    /// Handles the whole analysis process periodically.
+    /// </summary>
+    public void PerformAnalysisPeriodically(HttpClient client, string outExtension, string inExtension, Period period)
     {
-        var holdings = await _config.LoadConfiguration();
-        var downloader = new PeriodicalDownloader(period, new LocalDateTime(), holdings, client, extension, PerformAnalysis);
+        var downloader = new PeriodicalDownloader(period, new LocalDateTime(), client, outExtension, inExtension, PerformAnalysis);
         downloader.SchedulePeriodicDownload();
     }
 }

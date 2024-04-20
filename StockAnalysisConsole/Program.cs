@@ -81,7 +81,7 @@ namespace StockAnalysisConsole
             List<string> diffPaths;
             try
             {
-                diffPaths = await manager.PerformAnalysis(client, Constants.CsvExtension, period);
+                diffPaths = await manager.PerformAnalysis(client, outputExtension, inputExtension, period);
 
                 if (diffPaths.Count == 0)
                 {
