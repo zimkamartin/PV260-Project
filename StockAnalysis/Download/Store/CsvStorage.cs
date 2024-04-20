@@ -54,11 +54,7 @@ public class CsvStorage : IStore
             throw new StoreException(e.Message);
         }
     }
-
-    /// <summary>
-    /// Removes the last line from a stream.
-    /// Reason: The last line in the ARK Holdings csv files is filled with plaintext that makes the diff tool crash. :(
-    /// </summary>
+    
     private static void RemoveLastLine(Stream stream)
     {
         stream.Seek(0, SeekOrigin.Begin);

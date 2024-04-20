@@ -7,6 +7,9 @@ namespace StockAnalysis.Diff.Store;
 
 public class HtmlDiffStore : IDiffStore
 {
+    /// <summary>
+    /// Stores the diff data in a html file.
+    /// </summary>
     public async Task StoreDiff(IEnumerable<DiffData> data, string path, string name)
     {
         //divide data to new, oldPositive, oldNegative entries

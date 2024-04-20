@@ -72,10 +72,7 @@ public class CsvDiffComputer : IDiffCompute
             NewEntry = true
         };
     }
-
-    /// <summary>
-    /// Overload for creating new diff data if there is old data to compare with.
-    /// </summary>
+    
     private static DiffData GetNewDiffData(FundData newDataEntry, FundData oldDataEntry)
     {
         var sharesChange = ComputeChange(newDataEntry.Shares, oldDataEntry.Shares);
