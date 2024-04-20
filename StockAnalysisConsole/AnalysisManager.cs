@@ -1,6 +1,5 @@
 using StockAnalysis.Diff.Compute;
 using StockAnalysis.Diff.Store;
-using StockAnalysis.Download;
 using StockAnalysis.Download.Manager;
 using StockAnalysis.Download.PeriodicalDownload;
 using StockAnalysis.HoldingsConfig;
@@ -127,10 +126,12 @@ public class AnalysisManager
         return await PerformDiffs(holdings, storageDir, inExtension, outExtension, period);
     }
     
-    public async Task PerformAnalysisPeriodically(HttpClient client, string outExtension, string inExtension, Period period)
+    /// <summary>
+    /// Handles the whole analysis process periodically.
+    /// </summary>
+    public void PerformAnalysisPeriodically(HttpClient client, string outExtension, string inExtension, Period period)
     {
-        var holdings = await _config.LoadConfiguration();
-        var downloader = new PeriodicalDownloader(period, new LocalDateTime(), holdings, client, outExtension, inExtension, PerformAnalysis);
+        var downloader = new PeriodicalDownloader(period, new LocalDateTime(), client, outExtension, inExtension, PerformAnalysis);
         downloader.SchedulePeriodicDownload();
     }
 }

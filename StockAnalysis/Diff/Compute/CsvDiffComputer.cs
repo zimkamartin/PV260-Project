@@ -59,10 +59,7 @@ public class CsvDiffComputer : IDiffCompute
                 select oldDataEntry != null ? GetNewDiffData(newDataEntry, oldDataEntry) : GetNewDiffData(newDataEntry))
             .ToList();
     }
-
-    /// <summary>
-    /// Overload for creating new diff data if there is no old data to compare with.
-    /// </summary>
+    
     private static DiffData GetNewDiffData(FundData dataEntry)
     {
         return new DiffData
@@ -94,10 +91,7 @@ public class CsvDiffComputer : IDiffCompute
             NewEntry = false
         };
     }
-
-    /// <summary>
-    /// Computes the change between two string values from the csv.
-    /// </summary>
+    
     private static double ComputeChange(string newValue, string oldValue)
     {
         return StringToNumber(newValue) - StringToNumber(oldValue);

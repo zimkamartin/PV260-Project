@@ -1,17 +1,10 @@
-using Moq;
+using FakeItEasy;
 using StockAnalysis.Constants;
-using StockAnalysis.Diff.Compute;
-using StockAnalysis.Diff.Load;
-using StockAnalysis.Diff.Store;
-using StockAnalysis.Download;
-using StockAnalysis.Download.Getter;
-using StockAnalysis.Download.Manager;
 using StockAnalysis.Download.PeriodicalDownload;
-using StockAnalysis.Download.Store;
-using StockAnalysis.HoldingsConfig;
 using StockAnalysis.Utilities;
 using StockAnalysisConsole;
-using StockAnalysisConsole.Utils.Paths;
+using Times = FakeItEasy.Times;
+
 
 namespace StockAnalysisTests.DownloadTests.PeriodicalDownloadTests;
 
@@ -27,11 +20,6 @@ public class PeriodicalDownloaderTest
     public void SchedulePeriodicDownload_WhenCustomPeriodIsSet_ShouldPeriodicallyDownload()
     {
         // Arrange
-        HoldingInformation[] holdings =
-        {
-            new("ARKK-Holdings",
-                "https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv")
-        };
         using var client = new HttpClient();
         var extension = Constants.CsvExtension;
 
@@ -39,30 +27,19 @@ public class PeriodicalDownloaderTest
         const int count = 3;
         var interval = TimeSpan.FromSeconds(1);
         var period = new Period(start, interval);
-
-        var manager = new DownloadManager(Paths.GetDownloadFolderPath(), 
-                                            new CsvDownload(),
-                                            new CsvStorage(),
-                                            client);
         
-        var analysisManagerMock = new Mock<AnalysisManager>(manager, 
-                                                            new CsvDiffComputer(new CsvHoldingLoader()),
-                                                            new CsvDiffStore());
-        // ReSharper disable once AccessToDisposedClosure
-        analysisManagerMock.Setup(x => x.PerformAnalysis(client, extension, extension, period)).ReturnsAsync(new List<string>());
-
-        var dateTimeProviderMock = new Mock<IDateTimeProvider>();
-        dateTimeProviderMock.Setup(x => x.UtcNow()).Returns(start);
-
-        var periodicalDownloaderMock =
-            new Mock<PeriodicalDownloader>(period, dateTimeProviderMock.Object, holdings, client, extension, 
-                extension,
-#pragma warning disable CS8974 // Converting method group to non-delegate type
-                analysisManagerMock.Object.PerformAnalysis);
-#pragma warning restore CS8974 // Converting method group to non-delegate type
-
+        var analysisManager = A.Fake<AnalysisManager>();
+        A.CallTo(() => analysisManager.PerformAnalysis(client, extension, extension, period))
+            .Returns(new List<string>());
+        
+        var dateTimeProvider = A.Fake<IDateTimeProvider>();
+        A.CallTo(() => dateTimeProvider.UtcNow()).Returns(start);
+        
+        var periodicalDownloader = new PeriodicalDownloader(period, dateTimeProvider, client, extension,
+            extension,
+            analysisManager.PerformAnalysis);
         // Act
-        var timer = periodicalDownloaderMock.Object.SchedulePeriodicDownload();
+        var timer = periodicalDownloader.SchedulePeriodicDownload();
 
         // Wait 
         Thread.Sleep((count + 1) * 1000);
@@ -70,7 +47,7 @@ public class PeriodicalDownloaderTest
         timer.Dispose();
 
         // Assert
-        // ReSharper disable once AccessToDisposedClosure
-        analysisManagerMock.Verify(x => x.PerformAnalysis(client, extension, extension, period), Times.AtLeast(count));
+        A.CallTo(() => analysisManager.PerformAnalysis(client, extension, extension, period)).MustHaveHappened(count,Times.OrMore);
     }
+    
 }

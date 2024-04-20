@@ -1,4 +1,3 @@
-using StockAnalysis.HoldingsConfig;
 using StockAnalysis.Utilities;
 
 namespace StockAnalysis.Download.PeriodicalDownload;
@@ -13,7 +12,6 @@ public class PeriodicalDownloader
 {
     private Period _period;
     private readonly IDateTimeProvider _dateTimeProvider;
-    private IEnumerable<HoldingInformation> _holdings;
     private HttpClient _client;
     private readonly Func<HttpClient, string, string, Period, Task> _periodicEvent;
     private string _outExtension;
@@ -24,19 +22,16 @@ public class PeriodicalDownloader
     /// </summary>
     /// <param name="period">Specifies frequency of the download action.</param>
     /// <param name="dateTimeProvider">Used for determining current time.</param>
-    /// <param name="holdings">Holding information required for the download action.</param>
     /// <param name="client">HTTP client required for the download.</param>
     /// <param name="outExtension"></param>
     /// <param name="inExtension"></param>
     /// <param name="periodicEvent"></param>
-    public PeriodicalDownloader(Period period, IDateTimeProvider dateTimeProvider,
-        IEnumerable<HoldingInformation> holdings, HttpClient client, 
+    public PeriodicalDownloader(Period period, IDateTimeProvider dateTimeProvider, HttpClient client, 
         string outExtension, string inExtension,
         Func<HttpClient, string, string, Period, Task> periodicEvent)
     {
         _period = period;
         _dateTimeProvider = dateTimeProvider;
-        _holdings = holdings;
         _client = client;
         _periodicEvent = periodicEvent;
         _outExtension = outExtension;
