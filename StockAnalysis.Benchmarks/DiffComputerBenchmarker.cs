@@ -4,6 +4,9 @@ using StockAnalysis.Diff.Data;
 
 namespace StockAnalysis.Benchmarks;
 
+/// <summary>
+/// Benchmarks for the diff computer.
+/// </summary>
 public class DiffComputerBenchmarker
 {
     private List<FundData> _oldData;
