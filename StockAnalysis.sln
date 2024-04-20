@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockAnalysis.Tests", "Stoc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockAnalysisConsole", "StockAnalysisConsole\StockAnalysisConsole.csproj", "{C77DAFB3-FE55-4DE8-BC60-A1E60DE298EA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockAnalysis.Benchmarks", "StockAnalysis.Benchmarks\StockAnalysis.Benchmarks.csproj", "{A59AFB0A-6CD4-419A-BDCE-E0F427F855F6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{C77DAFB3-FE55-4DE8-BC60-A1E60DE298EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C77DAFB3-FE55-4DE8-BC60-A1E60DE298EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C77DAFB3-FE55-4DE8-BC60-A1E60DE298EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A59AFB0A-6CD4-419A-BDCE-E0F427F855F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A59AFB0A-6CD4-419A-BDCE-E0F427F855F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A59AFB0A-6CD4-419A-BDCE-E0F427F855F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A59AFB0A-6CD4-419A-BDCE-E0F427F855F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

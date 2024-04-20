@@ -27,7 +27,7 @@ public class CsvDiffComputerTests
         var changes = CsvDiffComputer.ComputeChanges(oldData, newData);
         var diffData = changes.ToList();
         // Assert
-        
+
         Assert.That(diffData, Has.Count.EqualTo(3));
         Assert.Multiple(() =>
         {
