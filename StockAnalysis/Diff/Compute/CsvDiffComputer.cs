@@ -21,10 +21,11 @@ public class CsvDiffComputer : IDiffCompute
     {
         var filename = Path.GetFileName(newFile);
 
+        // If an older version does not exist, fall back to default.
         if (oldFile == null || !(Path.Exists(oldFile)))
         {
             oldFile = Path.GetDirectoryName(Path.GetDirectoryName(newFile)) + Path.DirectorySeparatorChar +
-                      "Default" + Path.DirectorySeparatorChar + filename;
+                      Constants.Constants.DefaultFolderName + Path.DirectorySeparatorChar + filename;
         }
 
         List<FundData> oldData = new();

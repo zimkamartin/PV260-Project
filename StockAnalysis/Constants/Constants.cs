@@ -8,4 +8,5 @@ public static class Constants
     public const string CsvSharesDownIndicator = " down%";
     public const string HtmlExtension = ".html";
     public const string DateFolderNameFormat = "ddMMyyyy";
+    public const string DefaultFolderName = "Default";
 }
