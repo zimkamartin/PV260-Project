@@ -28,7 +28,7 @@ public class CsvDiffStoreTests
         IDiffStore storage = new CsvDiffStore();
         IDiffCompute computer = new CsvDiffComputer(new CsvHoldingLoader());
         var data = computer.CreateDiff(
-            Path.Combine(_testdataRoot!, "testfiles_new", "test.csv"), 
+            Path.Combine(_testdataRoot!, "testfiles_new", "test.csv"),
             null);
         var totalPath = Path.Join(_testdataRoot, "test_diff.csv");
         //act
@@ -57,7 +57,7 @@ public class CsvDiffStoreTests
         //act
         await storage.StoreDiff(diffData, _testdataRoot!, "test_diff");
         using var reader = new StreamReader(totalPath);
-            var line = await reader.ReadLineAsync();
+        var line = await reader.ReadLineAsync();
 
         //assert
         Assert.That(line,

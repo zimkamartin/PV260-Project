@@ -8,7 +8,7 @@ namespace StockAnalysisTests.DownloadTests;
 public class CsvDownloadTests
 {
     private WireMockServer _server;
-    
+
     [SetUp]
     public void Setup()
     {
@@ -45,7 +45,7 @@ public class CsvDownloadTests
     {
         _server.Stop();
     }
-    
+
     [Test]
     public async Task Download_GetCsv_Succeeds()
     {

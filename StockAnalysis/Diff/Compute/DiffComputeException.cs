@@ -13,5 +13,5 @@ public class DiffComputeException : Exception
     public DiffComputeException(string message, Exception? inner) : base(message, inner)
     {
     }
-    
+
 }

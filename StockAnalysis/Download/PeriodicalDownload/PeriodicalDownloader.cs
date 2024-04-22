@@ -26,7 +26,7 @@ public class PeriodicalDownloader
     /// <param name="outExtension"></param>
     /// <param name="inExtension"></param>
     /// <param name="periodicEvent"></param>
-    public PeriodicalDownloader(Period period, IDateTimeProvider dateTimeProvider, HttpClient client, 
+    public PeriodicalDownloader(Period period, IDateTimeProvider dateTimeProvider, HttpClient client,
         string outExtension, string inExtension,
         Func<HttpClient, string, string, Period, Task> periodicEvent)
     {

@@ -22,8 +22,8 @@ public static class EmailReader
             {
                 // This is not very nice. TODO: Regexp instead?
                 var address = new MailAddress(line);
-                Console.WriteLine(!addresses.Add(address.Address) 
-                                    ? "Address already added. Skipping." 
+                Console.WriteLine(!addresses.Add(address.Address)
+                                    ? "Address already added. Skipping."
                                     : "Address successfully added.");
             }
             catch (Exception)
@@ -33,7 +33,7 @@ public static class EmailReader
         }
         return addresses.ToArray();
     }
-    
+
     public static async Task<string[]> ReadFromJson(string path)
     {
         try
@@ -51,6 +51,6 @@ public static class EmailReader
         {
             throw;
         }
-        
+
     }
 }

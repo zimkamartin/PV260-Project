@@ -13,7 +13,7 @@ public class DownloadManagerTests
     private const string StoragePath = ".";
     private const string StorageDir = "download-test";
     private WireMockServer server;
-    
+
     [SetUp]
     public void Setup()
     {
@@ -50,7 +50,7 @@ public class DownloadManagerTests
     {
         server.Stop();
     }
-    
+
     [Test]
     public async Task GetHoldings_ValidUriSingleCsv_Succeeds()
     {
@@ -100,7 +100,7 @@ public class DownloadManagerTests
         using var client = new HttpClient();
         // This is necessary, otherwise the website will reject our request.
         client.DefaultRequestHeaders.Add("User-Agent", "Other");
-        
+
         var manager = new DownloadManager(".", new CsvDownload(), new CsvStorage(), client);
 
         // Act

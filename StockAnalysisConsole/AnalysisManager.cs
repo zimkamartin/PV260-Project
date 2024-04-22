@@ -16,7 +16,7 @@ public class AnalysisManager
     private readonly IDiffStore _diffStore;
 
     public AnalysisManager(DownloadManager manager,
-                           IDiffCompute diffComputer, 
+                           IDiffCompute diffComputer,
                            IDiffStore diffStore,
                            string configPath)
     {
@@ -119,7 +119,7 @@ public class AnalysisManager
 
         return await PerformDiffs(holdings, storageDir, inExtension, outExtension, period);
     }
-    
+
     /// <summary>
     /// Handles the whole analysis process periodically.
     /// </summary>

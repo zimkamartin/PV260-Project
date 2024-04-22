@@ -21,7 +21,7 @@ public class HtmlDiffStore : IDiffStore
         try
         {
             await using var fileWriter = new StreamWriter(finalPath);
-            
+
             //firstly build the whole output, write it to the file only at the end
             var toWrite = new StringBuilder("<html>\n<body>\n");
 
@@ -30,7 +30,7 @@ public class HtmlDiffStore : IDiffStore
             WriteDiffPositions(toWrite, oldEntriesNegative, "Reduced positions");
 
             toWrite.Append("</body>\n</html>\n");
-            
+
             await fileWriter.WriteAsync(toWrite);
         }
         catch (Exception e)
@@ -46,7 +46,7 @@ public class HtmlDiffStore : IDiffStore
     private static void WriteDiffPositions(StringBuilder output, List<DiffData> entries, string header)
     {
         output.Append($"<h2>{header}</h2>\n");
-        
+
         if (entries.Count == 0)
         {
             return;

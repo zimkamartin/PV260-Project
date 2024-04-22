@@ -5,7 +5,7 @@ namespace StockAnalysis.Download.Manager;
 
 public static class ManagerCreator
 {
-    public static DownloadManager CreateManager( string downloadFolderPath, HttpClient client, string extension )
+    public static DownloadManager CreateManager(string downloadFolderPath, HttpClient client, string extension)
     {
         IGetter getter;
         IStore store;

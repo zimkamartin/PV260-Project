@@ -56,7 +56,7 @@ namespace StockAnalysisConsole
 
             return true;
         }
-        
+
         public static async Task Main()
         {
             Console.WriteLine("Welcome to StockAnalysis.");
@@ -66,7 +66,7 @@ namespace StockAnalysisConsole
                 Console.WriteLine("Failed to load environment configuration. Exiting...");
                 return;
             }
-            
+
             var addresses = await LoadAddresses();
             if (!addresses.Any())
             {
@@ -84,7 +84,7 @@ namespace StockAnalysisConsole
                     _senderMail,
                     true,
                     _clientHost));
-            
+
             using var client = new HttpClient();
             client.DefaultRequestHeaders.Add("User-Agent", "Other");
 
@@ -107,7 +107,7 @@ namespace StockAnalysisConsole
             List<string> diffPaths;
             try
             {
-                diffPaths = await manager.PerformAnalysis(client, _outputExtension, 
+                diffPaths = await manager.PerformAnalysis(client, _outputExtension,
                     _inputExtension, period);
 
                 if (diffPaths.Count == 0)
@@ -139,7 +139,7 @@ namespace StockAnalysisConsole
             {
                 return await EmailReader.ReadFromJson(Paths.GetEmailFilePath());
             }
-            
+
             Console.WriteLine("Would you like to load emails from Emails.json? y/n");
             string[] addresses;
             var key = Console.ReadKey(true);
@@ -172,7 +172,7 @@ namespace StockAnalysisConsole
             {
                 return new Period(PeriodType.Monthly, DateTime.UtcNow);
             }
-            
+
             // TODO: Add options for period setting.
             Console.WriteLine("Would you like to set monthly period event for analysis? y/n");
 

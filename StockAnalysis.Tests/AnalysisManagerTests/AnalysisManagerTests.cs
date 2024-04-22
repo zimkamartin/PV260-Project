@@ -24,7 +24,7 @@ public class AnalysisManagerTests
         {
             _projectRoot = projectDirectory.Parent!.Parent!.FullName;
         }
-        
+
         _server = WireMockServer.Start(9876);
         // Most of the body is simply arbitrary data and has no effect on tests.
         _server.Given(Request.Create().WithPath("/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv").UsingGet()
@@ -52,13 +52,13 @@ public class AnalysisManagerTests
                           "04/16/2024,ARKG,\"BLOCK INC\",SQ,852234103,\"6,171,325\",\"$453,592,387.50\",6.85%\n")
         );
     }
-    
+
     [TearDown]
     public void Teardown()
     {
         _server.Stop();
     }
-    
+
     [Test]
     public async Task PerformAnalysis_Csv_Success()
     {
@@ -66,12 +66,12 @@ public class AnalysisManagerTests
         const string directory = "AnalysisManagerTests";
         const string fileName = "analysis";
         const string configFile = "analysis-config.json";
-        
+
         using var client = new HttpClient();
 
         // This is necessary, otherwise the website will reject our request.
         client.DefaultRequestHeaders.Add("User-Agent", "Other");
-        
+
         var dirPath = Path.Join(_projectRoot, directory);
         var configPath = Path.Join(dirPath, configFile);
         var download = ManagerCreator.CreateManager(Path.Join(dirPath, "csv"), client, ".csv");
@@ -80,20 +80,20 @@ public class AnalysisManagerTests
             DiffComputerCreator.CreateComputer(".csv"),
             DiffStoreCreator.CreateStore(".csv"),
             configPath);
-        
+
         // Act
         var result = await manager.PerformAnalysis(client, ".csv", ".csv", null);
-        
+
         // Assert
-        Assert.That( result[0], Does.EndWith(".csv"));
-        
+        Assert.That(result[0], Does.EndWith(".csv"));
+
         // Cleanup
         var folder = DateManipulator.GetFolderName(DateOnly.FromDateTime(DateTime.UtcNow));
         var totalPath = Path.Join(dirPath, "csv", folder);
         File.Delete(Path.Join(totalPath, fileName + ".csv"));
         Directory.Delete(totalPath);
     }
-    
+
     [Test]
     public async Task PerformAnalysis_Html_Success()
     {
@@ -101,12 +101,12 @@ public class AnalysisManagerTests
         const string directory = "AnalysisManagerTests";
         const string fileName = "analysis";
         const string configFile = "analysis-config.json";
-        
+
         using var client = new HttpClient();
 
         // This is necessary, otherwise the website will reject our request.
         client.DefaultRequestHeaders.Add("User-Agent", "Other");
-        
+
         var dirPath = Path.Join(_projectRoot, directory);
         var configPath = Path.Join(dirPath, configFile);
         var download = ManagerCreator.CreateManager(Path.Join(dirPath, "html"), client, ".csv");
@@ -115,13 +115,13 @@ public class AnalysisManagerTests
             DiffComputerCreator.CreateComputer(".csv"),
             DiffStoreCreator.CreateStore(".html"),
             configPath);
-        
+
         // Act
         var result = await manager.PerformAnalysis(client, ".html", ".csv", null);
-        
+
         // Assert
-        Assert.That( result[0], Does.EndWith(".html"));
-        
+        Assert.That(result[0], Does.EndWith(".html"));
+
         // Cleanup
         var folder = DateManipulator.GetFolderName(DateOnly.FromDateTime(DateTime.UtcNow));
         var totalPath = Path.Join(dirPath, "html", folder);

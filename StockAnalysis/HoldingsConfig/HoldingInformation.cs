@@ -2,7 +2,7 @@ namespace StockAnalysis.HoldingsConfig;
 
 public struct Holdings
 {
-    public IEnumerable<HoldingInformation> HoldingInfo { get; set;  }
+    public IEnumerable<HoldingInformation> HoldingInfo { get; set; }
 }
 
 /// <summary>
