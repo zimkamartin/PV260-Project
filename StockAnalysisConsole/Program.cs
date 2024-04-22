@@ -13,10 +13,11 @@ namespace StockAnalysisConsole
     internal static class Program
     {
         private static string _clientHost = string.Empty;
-        private static int _smtpPort = 0;
+        private static int _smtpPort;
         private static string _senderMail = string.Empty;
         private static string _inputExtension = string.Empty;
         private static string _outputExtension = string.Empty;
+        private static bool _skipConsole;
 
         private static bool LoadEnvironment()
         {
@@ -44,13 +45,16 @@ namespace StockAnalysisConsole
             }
 
             _outputExtension = Environment.GetEnvironmentVariable("OUTPUT_EXTENSION") ?? string.Empty;
-            
+
             if (_outputExtension == string.Empty)
             {
                 Console.WriteLine("Input extension not set correctly.");
                 return false;
             }
-            
+
+            var skip = Environment.GetEnvironmentVariable("SKIP_CONSOLE");
+            _skipConsole = skip is "TRUE";
+
             return true;
         }
         
@@ -131,6 +135,11 @@ namespace StockAnalysisConsole
         /// <returns>List of e-mail addresses of recipients.</returns>
         private static async Task<string[]> LoadAddresses()
         {
+            if (_skipConsole)
+            {
+                return EmailReader.ReadFromCli();
+            }
+            
             Console.WriteLine("Would you like to load emails from Emails.json? y/n");
             string[] addresses;
             var key = Console.ReadKey(true);
@@ -159,6 +168,11 @@ namespace StockAnalysisConsole
         /// </summary>
         private static Period? SetPeriod()
         {
+            if (_skipConsole)
+            {
+                return new Period(PeriodType.Monthly, DateTime.UtcNow);
+            }
+            
             // TODO: Add options for period setting.
             Console.WriteLine("Would you like to set monthly period event for analysis? y/n");
 
