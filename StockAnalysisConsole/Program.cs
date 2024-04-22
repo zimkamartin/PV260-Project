@@ -95,7 +95,8 @@ namespace StockAnalysisConsole
                     ManagerCreator.CreateManager(Paths.GetDownloadFolderPath(), client, _inputExtension);
                 manager = new AnalysisManager(downloadManager,
                     DiffComputerCreator.CreateComputer(_inputExtension),
-                    DiffStoreCreator.CreateStore(_outputExtension));
+                    DiffStoreCreator.CreateStore(_outputExtension),
+                    Paths.GetConfigFilePath());
             }
             catch (NotImplementedException e)
             {
@@ -136,7 +137,7 @@ namespace StockAnalysisConsole
         {
             if (_skipConsole)
             {
-                return EmailReader.ReadFromCli();
+                return await EmailReader.ReadFromJson(Paths.GetEmailFilePath());
             }
             
             Console.WriteLine("Would you like to load emails from Emails.json? y/n");

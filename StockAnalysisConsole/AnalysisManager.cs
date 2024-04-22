@@ -17,9 +17,10 @@ public class AnalysisManager
 
     public AnalysisManager(DownloadManager manager,
                            IDiffCompute diffComputer, 
-                           IDiffStore diffStore)
+                           IDiffStore diffStore,
+                           string configPath)
     {
-        _config = new JsonConfiguration(Paths.GetConfigFilePath());
+        _config = new JsonConfiguration(configPath);
         _manager = manager;
         _diffComputer = diffComputer;
         _diffStore = diffStore;
@@ -29,9 +30,9 @@ public class AnalysisManager
     /// <summary>
     /// Gets the path of a holding file.
     /// </summary>
-    private static string GetPath(HoldingInformation holding, string dir, string extension)
+    private string GetPath(HoldingInformation holding, string dir, string extension)
     {
-        return Path.Combine(Paths.GetDownloadFolderPath(), dir, holding.Name + extension);
+        return Path.Combine(_manager.StoragePath, dir, holding.Name + extension);
     }
 
     /// <summary>
@@ -100,17 +101,10 @@ public class AnalysisManager
     }
 
     /// <summary>
-    /// Gets new data for all holdings.
-    /// </summary>
-    private async Task<bool> GetNewData(IEnumerable<HoldingInformation> holdings,
-        string storageDirectory)
-    {
-        return await _manager.GetHoldings(holdings, storageDirectory);
-    }
-
-    /// <summary>
     /// Handles the whole analysis process.
     /// It is virtual because it is meant to be overridden in tests.
+    /// The client here is received only because of PeriodicalDownloader.
+    /// TODO: Discuss removing client here, this is redundant.
     /// </summary>
     /// <returns>Paths of diffs.</returns>
     public virtual async Task<List<string>> PerformAnalysis(HttpClient client, string outExtension, string inExtension, Period? period)
@@ -118,7 +112,7 @@ public class AnalysisManager
         var holdings = (await _config.LoadConfiguration()).ToList();
         // When Period is set, "now" can be obtained from it. But not every time.
         var storageDir = DateManipulator.GetFolderName(DateOnly.FromDateTime(DateTime.UtcNow));
-        if (!await GetNewData(holdings, storageDir))
+        if (!await _manager.GetHoldings(holdings, storageDir))
         {
             return new List<string>();
         }
