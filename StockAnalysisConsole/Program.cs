@@ -1,4 +1,3 @@
-using StockAnalysis.Constants;
 using StockAnalysis.Diff.Compute;
 using StockAnalysis.Diff.Store;
 using StockAnalysis.Download.Manager;
@@ -12,30 +11,62 @@ namespace StockAnalysisConsole
 {
     internal static class Program
     {
-        private static string _clientHost = "smtp-mail.outlook.com";
-        private static int _smtpPort = 587;
-        private static string _senderMail = "stockanalyzer-pink@outlook.com";
+        private static string _clientHost = string.Empty;
+        private static int _smtpPort;
+        private static string _senderMail = string.Empty;
+        private static string _inputExtension = string.Empty;
+        private static string _outputExtension = string.Empty;
+        private static bool _skipConsole;
 
-        public static async Task Main()
+        private static bool LoadEnvironment()
         {
-            Console.WriteLine("Welcome to StockAnalysis.");
-
             _clientHost = Environment.GetEnvironmentVariable("CLIENT_HOST") ?? string.Empty;
             var port = Environment.GetEnvironmentVariable("SMTP_PORT");
             if (!int.TryParse(port, out _smtpPort))
             {
                 Console.WriteLine("Failed to retrieve smtp port, exiting.");
-                return;
+                return false;
             }
             _senderMail = Environment.GetEnvironmentVariable("SENDER_MAIL") ?? string.Empty;
             if (_clientHost.Length == 0 || _senderMail.Length == 0)
             {
                 Console.WriteLine("Configuration not set correctly, exiting. " +
                                   "Check if all environment variables are set correctly.");
+                return false;
+            }
+
+            _inputExtension = Environment.GetEnvironmentVariable("INPUT_EXTENSION") ?? string.Empty;
+
+            if (_inputExtension == string.Empty)
+            {
+                Console.WriteLine("Input extension not set correctly.");
+                return false;
+            }
+
+            _outputExtension = Environment.GetEnvironmentVariable("OUTPUT_EXTENSION") ?? string.Empty;
+
+            if (_outputExtension == string.Empty)
+            {
+                Console.WriteLine("Input extension not set correctly.");
+                return false;
+            }
+
+            var skip = Environment.GetEnvironmentVariable("SKIP_CONSOLE");
+            _skipConsole = skip is "TRUE";
+
+            return true;
+        }
+
+        public static async Task Main()
+        {
+            Console.WriteLine("Welcome to StockAnalysis.");
+
+            if (!LoadEnvironment())
+            {
+                Console.WriteLine("Failed to load environment configuration. Exiting...");
                 return;
             }
-            
-            
+
             var addresses = await LoadAddresses();
             if (!addresses.Any())
             {
@@ -53,20 +84,19 @@ namespace StockAnalysisConsole
                     _senderMail,
                     true,
                     _clientHost));
-            
+
             using var client = new HttpClient();
             client.DefaultRequestHeaders.Add("User-Agent", "Other");
 
-            var inputExtension = Environment.GetEnvironmentVariable("INPUT_EXTENSION") ?? "unknown";
-            var outputExtension = Environment.GetEnvironmentVariable("OUTPUT_EXTENSION") ?? "unknown";
             AnalysisManager manager;
             try
             {
                 var downloadManager =
-                    ManagerCreator.CreateManager(Paths.GetDownloadFolderPath(), client, inputExtension);
+                    ManagerCreator.CreateManager(Paths.GetDownloadFolderPath(), client, _inputExtension);
                 manager = new AnalysisManager(downloadManager,
-                    DiffComputerCreator.CreateComputer(inputExtension),
-                    DiffStoreCreator.CreateStore(outputExtension));
+                    DiffComputerCreator.CreateComputer(_inputExtension),
+                    DiffStoreCreator.CreateStore(_outputExtension),
+                    Paths.GetConfigFilePath());
             }
             catch (NotImplementedException e)
             {
@@ -77,7 +107,8 @@ namespace StockAnalysisConsole
             List<string> diffPaths;
             try
             {
-                diffPaths = await manager.PerformAnalysis(client, outputExtension, inputExtension, period);
+                diffPaths = await manager.PerformAnalysis(client, _outputExtension,
+                    _inputExtension, period);
 
                 if (diffPaths.Count == 0)
                 {
@@ -104,6 +135,11 @@ namespace StockAnalysisConsole
         /// <returns>List of e-mail addresses of recipients.</returns>
         private static async Task<string[]> LoadAddresses()
         {
+            if (_skipConsole)
+            {
+                return await EmailReader.ReadFromJson(Paths.GetEmailFilePath());
+            }
+
             Console.WriteLine("Would you like to load emails from Emails.json? y/n");
             string[] addresses;
             var key = Console.ReadKey(true);
@@ -132,6 +168,11 @@ namespace StockAnalysisConsole
         /// </summary>
         private static Period? SetPeriod()
         {
+            if (_skipConsole)
+            {
+                return new Period(PeriodType.Monthly, DateTime.UtcNow);
+            }
+
             // TODO: Add options for period setting.
             Console.WriteLine("Would you like to set monthly period event for analysis? y/n");
 

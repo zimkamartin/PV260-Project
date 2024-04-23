@@ -9,6 +9,7 @@
 
     <ItemGroup>
       <PackageReference Include="BenchmarkDotNet" Version="0.13.12" />
+      <PackageReference Include="WireMock.Net" Version="1.5.52" />
     </ItemGroup>
 
     <ItemGroup>

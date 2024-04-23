@@ -13,7 +13,7 @@ public class CsvDiffComputer : IDiffCompute
     {
         _loader = loader;
     }
-    
+
     /// <summary>
     /// Creates a diff between two csv files and returns the changes.
     /// </summary>
@@ -21,10 +21,11 @@ public class CsvDiffComputer : IDiffCompute
     {
         var filename = Path.GetFileName(newFile);
 
+        // If an older version does not exist, fall back to default.
         if (oldFile == null || !(Path.Exists(oldFile)))
         {
             oldFile = Path.GetDirectoryName(Path.GetDirectoryName(newFile)) + Path.DirectorySeparatorChar +
-                      "Default" + Path.DirectorySeparatorChar + filename;
+                      Constants.Constants.DefaultFolderName + Path.DirectorySeparatorChar + filename;
         }
 
         List<FundData> oldData = new();
@@ -51,7 +52,7 @@ public class CsvDiffComputer : IDiffCompute
     /// <summary>
     /// Computes the changes between two sets of data.
     /// </summary>
-    public static IEnumerable<DiffData> ComputeChanges(List<FundData> oldData, 
+    public static IEnumerable<DiffData> ComputeChanges(List<FundData> oldData,
                                                        List<FundData> newData)
     {
         return (from newDataEntry in newData
@@ -59,7 +60,7 @@ public class CsvDiffComputer : IDiffCompute
                 select oldDataEntry != null ? GetNewDiffData(newDataEntry, oldDataEntry) : GetNewDiffData(newDataEntry))
             .ToList();
     }
-    
+
     private static DiffData GetNewDiffData(FundData dataEntry)
     {
         return new DiffData
@@ -72,7 +73,7 @@ public class CsvDiffComputer : IDiffCompute
             NewEntry = true
         };
     }
-    
+
     private static DiffData GetNewDiffData(FundData newDataEntry, FundData oldDataEntry)
     {
         var sharesChange = ComputeChange(newDataEntry.Shares, oldDataEntry.Shares);
@@ -88,7 +89,7 @@ public class CsvDiffComputer : IDiffCompute
             NewEntry = false
         };
     }
-    
+
     private static double ComputeChange(string newValue, string oldValue)
     {
         return StringToNumber(newValue) - StringToNumber(oldValue);

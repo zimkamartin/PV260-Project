@@ -9,7 +9,7 @@ public class SmtpClientGenerator : ISmtpClientGenerator
     private readonly string _senderAddress;
     private readonly bool _ssl;
     private readonly string _clientHost;
-    
+
     /// <summary>
     /// Initializes a new instance of the <see cref="SmtpClientGenerator"/> class.
     /// </summary>
@@ -20,7 +20,7 @@ public class SmtpClientGenerator : ISmtpClientGenerator
         _ssl = allowSsl;
         _clientHost = clientHost;
     }
-    
+
     /// <summary>
     /// Generates a client that is used to send the notification.
     /// </summary>

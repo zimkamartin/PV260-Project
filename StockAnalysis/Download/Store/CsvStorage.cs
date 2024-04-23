@@ -54,7 +54,7 @@ public class CsvStorage : IStore
             throw new StoreException(e.Message);
         }
     }
-    
+
     private static void RemoveLastLine(Stream stream)
     {
         stream.Seek(0, SeekOrigin.Begin);

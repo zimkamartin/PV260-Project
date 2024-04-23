@@ -29,7 +29,7 @@ public class DiffComputerCreatorTests
             Assert.Fail("The method threw an unexpected exception.");
         }
     }
-    
+
     [Test]
     public void CreateComputer_UnknownExtension_Throws()
     {

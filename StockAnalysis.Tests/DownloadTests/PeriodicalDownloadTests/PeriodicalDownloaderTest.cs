@@ -27,14 +27,14 @@ public class PeriodicalDownloaderTest
         const int count = 3;
         var interval = TimeSpan.FromSeconds(1);
         var period = new Period(start, interval);
-        
+
         var analysisManager = A.Fake<AnalysisManager>();
         A.CallTo(() => analysisManager.PerformAnalysis(client, extension, extension, period))
             .Returns(new List<string>());
-        
+
         var dateTimeProvider = A.Fake<IDateTimeProvider>();
         A.CallTo(() => dateTimeProvider.UtcNow()).Returns(start);
-        
+
         var periodicalDownloader = new PeriodicalDownloader(period, dateTimeProvider, client, extension,
             extension,
             analysisManager.PerformAnalysis);
@@ -47,7 +47,7 @@ public class PeriodicalDownloaderTest
         timer.Dispose();
 
         // Assert
-        A.CallTo(() => analysisManager.PerformAnalysis(client, extension, extension, period)).MustHaveHappened(count,Times.OrMore);
+        A.CallTo(() => analysisManager.PerformAnalysis(client, extension, extension, period)).MustHaveHappened(count, Times.OrMore);
     }
-    
+
 }

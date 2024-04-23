@@ -36,7 +36,7 @@ public class ConfigTests
         // Act
         var holdings = await config.LoadConfiguration();
         var holdingInformation = holdings.ToList();
-        
+
         // Assert
         Assert.That(holdingInformation, Has.Count.EqualTo(1));
         Assert.Multiple(() =>
@@ -55,7 +55,7 @@ public class ConfigTests
 
         var holdings = await config.LoadConfiguration();
         var holdingInformation = holdings.ToList();
-        
+
         Assert.That(holdingInformation, Has.Count.EqualTo(3));
         Assert.Multiple(() =>
         {

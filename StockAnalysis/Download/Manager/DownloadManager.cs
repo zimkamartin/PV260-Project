@@ -9,7 +9,7 @@ public class DownloadManager
     private readonly IGetter _getter;
     private readonly IStore _storage;
     private readonly HttpClient _client;
-    private string StoragePath { get; }
+    public string StoragePath { get; }
 
     public DownloadManager(string storagePath, IGetter getter, IStore store, HttpClient client)
     {

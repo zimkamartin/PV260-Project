@@ -22,6 +22,6 @@ public class CsvHoldingLoader : IHoldingLoader
             throw new HoldingLoaderException(e.Message, e.InnerException);
         }
 
-        
+
     }
 }

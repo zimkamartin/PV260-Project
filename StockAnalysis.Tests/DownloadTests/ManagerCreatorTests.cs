@@ -9,7 +9,7 @@ public class ManagerCreatorTests
     {
         var filePath = "path";
         var client = new HttpClient();
-        
+
         try
         {
             _ = ManagerCreator.CreateManager(filePath, client, ".csv");
@@ -25,7 +25,7 @@ public class ManagerCreatorTests
     {
         var filePath = "path";
         var client = new HttpClient();
-        
+
         try
         {
             _ = ManagerCreator.CreateManager(filePath, client, ".CSV");
@@ -41,7 +41,7 @@ public class ManagerCreatorTests
     {
         var filePath = "path";
         var client = new HttpClient();
-        
+
         try
         {
             _ = ManagerCreator.CreateManager(filePath, client, "UNKNOWN");

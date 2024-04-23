@@ -29,7 +29,7 @@ public class DiffStoreCreatorTests
             Assert.Fail("The method threw an unexpected exception.");
         }
     }
-    
+
     [Test]
     public void CreateStore_UnknownExtension_Throws()
     {

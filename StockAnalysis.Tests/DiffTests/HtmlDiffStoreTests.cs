@@ -27,9 +27,9 @@ public class HtmlDiffStoreTests
         //arrange
         IDiffStore storage = new HtmlDiffStore();
         var data = MockDiffData();
-        
+
         var totalPath = Path.Join(_testdataRoot, "test_diff.html");
-        
+
         //act
         await storage.StoreDiff(data, _testdataRoot!, "test_diff");
 
@@ -47,7 +47,7 @@ public class HtmlDiffStoreTests
         // Arrange
         IDiffStore storage = new HtmlDiffStore();
         var data = MockDiffData();
-        
+
         var totalPath = Path.Join(_testdataRoot, "test_diff.html");
 
         //act
@@ -55,7 +55,7 @@ public class HtmlDiffStoreTests
 
         //assert
         Approvals.VerifyFile(totalPath);
-        
+
         //cleanup
         File.Delete(totalPath);
         Assert.That(File.Exists(totalPath), Is.False);
