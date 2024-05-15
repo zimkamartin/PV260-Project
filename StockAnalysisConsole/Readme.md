@@ -17,5 +17,5 @@ The following environment variables must be set for the application to function 
 - ``SENDER_MAIL`` - The email address that the application uses to send emails.
 - ``PV260_EMAIL_PASSWORD`` - The password for the email address in ``SENDER_MAIL``; 
 - ``INPUT_EXTENSION`` - The extension given to downloaded etf holdings. Currently supported: ```.csv```
-- ``OUTPUT_EXTENSION`` - The extension given to sent email attachments. This affects formatting. Currently supported: ```.csv```, ```.html```
+- ``OUTPUT_EXTENSION`` - The extension given to sent email attachments. This affects formatting. Currently supported: ```.csv```, ```.html```, ```.pdf```
 - ``SKIP_CONSOLE_INPUT`` - The extension given to skip any input required by console. ``TRUE`` to skip, otherwise it will not be skipped.

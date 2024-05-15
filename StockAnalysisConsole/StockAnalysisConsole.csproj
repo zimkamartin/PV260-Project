@@ -17,6 +17,7 @@
 
     <ItemGroup>
       <PackageReference Include="ApprovalTests" Version="7.0.0-beta.1" />
+      <PackageReference Include="Aspose.PDF" Version="24.5.1" />
       <PackageReference Include="WireMock.Net" Version="1.5.52" />
     </ItemGroup>
 
