@@ -9,8 +9,8 @@ namespace StockAnalysis.Benchmarks;
 /// </summary>
 public class DiffComputerBenchmarker
 {
-    private List<FundData> _oldData;
-    private List<FundData> _newData;
+    private List<FundData> _oldData = null!;
+    private List<FundData> _newData = null!;
 
     [GlobalSetup]
     public void Setup()
