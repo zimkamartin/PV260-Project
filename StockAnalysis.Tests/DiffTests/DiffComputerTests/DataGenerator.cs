@@ -65,19 +65,20 @@ public static class DataGenerator
         List<FundData> newData)
     {
         var diffData = new List<DiffData>();
-        foreach ( var data in newData )
+        for (var i = 0; i < newData.Count; i++)
         {
-            var ticker = data.Ticker;
-            var company = data.Company;
-            var sharesChange = int.Parse(data.Shares);
-            var marketValueChange = int.Parse(data.MarketValue);
-            var weight = int.Parse(data.Weight);
+            var ticker = newData[i].Ticker;
+            var company = newData[i].Company;
+            var sharesChange = int.Parse(newData[i].Shares);
+            var marketValueChange = int.Parse(newData[i].MarketValue);
+            var weight = int.Parse(newData[i].Weight);
             if (oldData.Any(stock => stock.Ticker == ticker))
             {
-                sharesChange -= int.Parse(data.Shares);
-                marketValueChange -= int.Parse(data.MarketValue);
-                weight -= int.Parse(data.Weight);
+                sharesChange -= int.Parse(oldData[i].Shares);
+                marketValueChange -= int.Parse(oldData[i].MarketValue);
+                weight -= int.Parse(oldData[i].Weight);
             }
+            
             diffData.Add(new DiffData()
             {
                 Company = company,
