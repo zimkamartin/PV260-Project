@@ -2,6 +2,7 @@
 using StockAnalysis.Diff.Compute;
 using StockAnalysis.Diff.Load;
 using StockAnalysis.Diff.Store;
+using StockAnalysisTests.Utility;
 
 namespace StockAnalysisTests.DiffTests.DiffStoreTests;
 

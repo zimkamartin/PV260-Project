@@ -7,7 +7,7 @@ namespace StockAnalysisTests.DownloadTests;
 
 public class CsvDownloadTests
 {
-    private WireMockServer _server;
+    private WireMockServer _server = null!;
 
     [SetUp]
     public void Setup()
@@ -50,8 +50,6 @@ public class CsvDownloadTests
     public async Task Download_GetCsv_Succeeds()
     {
         // Arrange
-        // It might be better to mock a simple rest API service instead of sending requests to ark-funds.
-        // Will improve this if I get the time.
         const string uri =
             "http://localhost:9876/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv";
         using var client = new HttpClient();

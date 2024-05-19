@@ -1,32 +1,19 @@
 using System.Text;
 using StockAnalysis.Download.Store;
+using StockAnalysisTests.Utility;
 
 namespace StockAnalysisTests.DownloadTests;
 
 public class StorageTests
 {
-    private string? _projectRoot;
-
-    [SetUp]
-    public void Setup()
-    {
-        var current = Environment.CurrentDirectory;
-        var projectDirectory = Directory.GetParent(current);
-        _projectRoot = current;
-        if (projectDirectory is not null)
-        {
-            _projectRoot = projectDirectory.Parent!.Parent!.FullName;
-        }
-    }
-
     [Test]
     public async Task CsvStorage_WriteToFileSystem_WritesStreamToTextFile()
     {
         // Arrange
-        const string directory = "storage-test";
+        const string directory = "StorageTest";
         const string fileName = "store";
         var storage = new CsvStorage();
-        var dirPath = Path.Join(_projectRoot, directory);
+        var dirPath = Path.Join(PathResolver.GetRoot(), directory);
         var totalPath = Path.Join(dirPath, fileName + ".csv");
         UnicodeEncoding encoding = new();
         const string text = "This is a sample text.";
@@ -35,7 +22,7 @@ public class StorageTests
 
         // Act
         // Not checking for exceptions as they are not meant to be thrown here.
-        await storage.Store(memoryStream, _projectRoot!, directory, fileName);
+        await storage.Store(memoryStream, PathResolver.GetRoot(), directory, fileName);
         var actualBytes = await File.ReadAllBytesAsync(totalPath);
 
         // Assert

@@ -1,10 +1,8 @@
-﻿using StockAnalysis.Diff.Data;
-using StockAnalysis.Diff.Store;
-using StockAnalysis.Utilities;
+﻿using StockAnalysis.Diff.Store;
 using ApprovalTests;
-using StockAnalysisTests.DiffTests.DiffStoreTests;
+using StockAnalysisTests.Utility;
 
-namespace StockAnalysisTests.DiffTests;
+namespace StockAnalysisTests.DiffTests.DiffStoreTests;
 
 public class HtmlDiffStoreTests
 {
