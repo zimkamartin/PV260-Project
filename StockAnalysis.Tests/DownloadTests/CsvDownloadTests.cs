@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using StockAnalysis.Download.Getter;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
@@ -61,14 +62,18 @@ public class CsvDownloadTests
 
         // Act
         await using var resultStream = await downloader.Get(uri, client);
+        Assert.Multiple(() =>
+        {
 
-        // Assert
-        // There is some data in the stream.
-        Assert.That(resultStream.Length, Is.GreaterThan(0));
+            // Assert
+            // The stream is not null and there is some data in the stream.
+            Assert.That(resultStream is not null);
+            Assert.That(resultStream!.Length, Is.GreaterThan(0));
+        });
         // Needed properties of the stream.
         Assert.Multiple(() =>
         {
-            Assert.That(resultStream.CanRead, Is.True);
+            Assert.That(resultStream!.CanRead, Is.True);
             Assert.That(resultStream.CanSeek, Is.True);
         });
     }
