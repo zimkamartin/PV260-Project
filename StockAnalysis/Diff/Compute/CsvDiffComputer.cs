@@ -78,6 +78,7 @@ public class CsvDiffComputer : IDiffCompute
     {
         var sharesChange = ComputeChange(newDataEntry.Shares, oldDataEntry.Shares);
         var marketValueChange = ComputeChange(newDataEntry.MarketValue, oldDataEntry.MarketValue);
+        var weightValueChange = ComputeChange(newDataEntry.Weight, oldDataEntry.Weight);
 
         return new DiffData
         {
@@ -85,7 +86,7 @@ public class CsvDiffComputer : IDiffCompute
             Ticker = newDataEntry.Ticker,
             SharesChange = sharesChange,
             MarketValueChange = marketValueChange,
-            Weight = StringToNumber(newDataEntry.Weight),
+            Weight = weightValueChange,
             NewEntry = false
         };
     }
