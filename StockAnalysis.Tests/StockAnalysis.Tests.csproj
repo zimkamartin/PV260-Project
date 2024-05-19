@@ -14,6 +14,7 @@
         <PackageReference Include="ApprovalTests" Version="7.0.0-beta.1" />
         <PackageReference Include="Aspose.PDF" Version="24.5.1" />
         <PackageReference Include="FakeItEasy" Version="8.2.0" />
+        <PackageReference Include="Faker.Net" Version="2.0.163" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.1"/>
         <PackageReference Include="NUnit" Version="3.13.3"/>
         <PackageReference Include="NUnit3TestAdapter" Version="4.4.2"/>
@@ -32,9 +33,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="DiffTests\HtmlDiffStoreTests.StoreDiff_WhenCalledRight_ShouldBeRightContentInCreatedFile.approved.html">
+      <None Update="DiffTests\DiffStoreTests\HtmlDiffStoreTests.StoreDiff_WhenCalledRight_ShouldBeRightContentInCreatedFile.approved.html">
         <ParentExtension>.cs</ParentExtension>
         <ParentFile>HtmlDiffStoreTests</ParentFile>
+        <DependentUpon>HtmlDiffStoreTests.cs</DependentUpon>
       </None>
     </ItemGroup>
 

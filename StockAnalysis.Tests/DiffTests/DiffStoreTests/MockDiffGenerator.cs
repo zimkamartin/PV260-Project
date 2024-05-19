@@ -1,6 +1,6 @@
 using StockAnalysis.Diff.Data;
 
-namespace StockAnalysisTests.DiffTests;
+namespace StockAnalysisTests.DiffTests.DiffStoreTests;
 
 public static class MockDiffGenerator
 {

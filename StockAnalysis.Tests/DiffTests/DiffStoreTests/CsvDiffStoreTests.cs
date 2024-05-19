@@ -3,7 +3,7 @@ using StockAnalysis.Diff.Compute;
 using StockAnalysis.Diff.Load;
 using StockAnalysis.Diff.Store;
 
-namespace StockAnalysisTests.DiffTests;
+namespace StockAnalysisTests.DiffTests.DiffStoreTests;
 
 public class CsvDiffStoreTests
 {
