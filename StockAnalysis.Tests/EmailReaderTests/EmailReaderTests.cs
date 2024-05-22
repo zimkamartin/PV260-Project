@@ -1,24 +1,12 @@
 using StockAnalysis.Utilities.Email;
+using StockAnalysisTests.Utility;
 
 namespace StockAnalysisTests.EmailReaderTests;
 
 public class EmailReaderTests
 {
     private const string StoreDirectory = "Mocks";
-    private string? _projectRoot;
-
-    [SetUp]
-    public void Setup()
-    {
-        var current = Environment.CurrentDirectory;
-        var projectDirectory = Directory.GetParent(current);
-        _projectRoot = current;
-        if (projectDirectory is not null)
-        {
-            _projectRoot = projectDirectory.Parent!.Parent!.FullName;
-        }
-    }
-
+    
     [Test]
     public async Task ReadFromJson_EmptyFile_ReturnsEmpty()
     {
@@ -26,7 +14,7 @@ public class EmailReaderTests
         const string file = "empty_email.json";
 
         // Act
-        var result = await EmailReader.ReadFromJson(Path.Combine(_projectRoot!, StoreDirectory, file));
+        var result = await EmailReader.ReadFromJson(Path.Combine(PathResolver.GetRoot(), StoreDirectory, file));
 
         // Assert
         Assert.That(result, Is.Empty);
@@ -40,7 +28,7 @@ public class EmailReaderTests
         var expected = new[] { "test@test.com" };
 
         // Act
-        var result = await EmailReader.ReadFromJson(Path.Combine(_projectRoot!, StoreDirectory, file));
+        var result = await EmailReader.ReadFromJson(Path.Combine(PathResolver.GetRoot(), StoreDirectory, file));
 
         // Assert
         Assert.That(result, Is.EqualTo(expected));
@@ -53,7 +41,7 @@ public class EmailReaderTests
         const string file = "email_bad.json";
 
         // Act
-        var result = await EmailReader.ReadFromJson(Path.Combine(_projectRoot!, StoreDirectory, file));
+        var result = await EmailReader.ReadFromJson(Path.Combine(PathResolver.GetRoot(), StoreDirectory, file));
 
         // Assert
         Assert.That(result, Is.Empty);
@@ -68,7 +56,7 @@ public class EmailReaderTests
         // Act
         try
         {
-            await EmailReader.ReadFromJson(Path.Combine(_projectRoot!, StoreDirectory, file));
+            await EmailReader.ReadFromJson(Path.Combine(PathResolver.GetRoot(), StoreDirectory, file));
             Assert.Fail("EmailReader did not throw an exception.");
         }
         catch (Exception)

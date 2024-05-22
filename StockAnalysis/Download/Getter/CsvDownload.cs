@@ -9,7 +9,7 @@ public class CsvDownload : IGetter
     /// <param name="client">The client used for the request. This method does not modify the client.</param>
     /// <returns>A stream of the downloaded contents.</returns>
     /// <exception cref="GetterException">The process of retrieving data failed.</exception>
-    public async Task<Stream> Get(string uri, HttpClient client)
+    public async Task<Stream?> Get(string uri, HttpClient client)
     {
         try
         {
@@ -18,15 +18,12 @@ public class CsvDownload : IGetter
             {
                 return await message.Content.ReadAsStreamAsync();
             }
-
-            throw new GetterException("Download failed: ["
-                                      + message.StatusCode
-                                      + "] "
-                                      + message.ReasonPhrase);
         }
         catch (Exception e)
         {
             throw new GetterException(e.Message);
         }
+
+        return null;
     }
 }

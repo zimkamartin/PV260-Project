@@ -2,37 +2,25 @@
 using StockAnalysis.Diff.Compute;
 using StockAnalysis.Diff.Load;
 using StockAnalysis.Diff.Store;
+using StockAnalysisTests.Utility;
 
-namespace StockAnalysisTests.DiffTests;
+namespace StockAnalysisTests.DiffTests.DiffStoreTests;
 
 public class CsvDiffStoreTests
 {
-    private string? _testdataRoot;
-
-    [SetUp]
-    public void Setup()
-    {
-        var current = Environment.CurrentDirectory;
-        var projectDirectory = Directory.GetParent(current);
-        _testdataRoot = current;
-        if (projectDirectory is not null)
-        {
-            _testdataRoot = Path.Combine(projectDirectory.Parent!.Parent!.FullName, "TestData");
-        }
-    }
-
     [Test]
     public async Task StoreDiff_WhenCalledRight_ShouldCreateFile()
     {
         //arrange
         IDiffStore storage = new CsvDiffStore();
         IDiffCompute computer = new CsvDiffComputer(new CsvHoldingLoader());
+        var testDataPath = PathResolver.GetTestDataPath();
         var data = computer.CreateDiff(
-            Path.Combine(_testdataRoot!, "testfiles_new", "test.csv"),
+            Path.Combine(testDataPath, "testfiles_new", "test.csv"),
             null);
-        var totalPath = Path.Join(_testdataRoot, "test_diff.csv");
+        var totalPath = Path.Join(testDataPath, "test_diff.csv");
         //act
-        await storage.StoreDiff(data, _testdataRoot!, "test_diff");
+        await storage.StoreDiff(data, testDataPath, "test_diff");
 
         //assert
         Assert.That(File.Exists(totalPath), Is.True);
@@ -48,14 +36,15 @@ public class CsvDiffStoreTests
         // Arrange
         IDiffStore storage = new CsvDiffStore();
         IDiffCompute computer = new CsvDiffComputer(new CsvHoldingLoader());
+        var testDataPath = PathResolver.GetTestDataPath();
         var data = computer.CreateDiff(
-            Path.Combine(_testdataRoot!, "testfiles_new", "test.csv"),
-            Path.Combine(_testdataRoot!, "testfiles_old", "test.csv"));
+            Path.Combine(testDataPath, "testfiles_new", "test.csv"),
+            Path.Combine(testDataPath, "testfiles_old", "test.csv"));
         var diffData = data.ToList();
-        var totalPath = Path.Join(_testdataRoot, "test_diff.csv");
+        var totalPath = Path.Join(testDataPath, "test_diff.csv");
 
         //act
-        await storage.StoreDiff(diffData, _testdataRoot!, "test_diff");
+        await storage.StoreDiff(diffData, testDataPath, "test_diff");
         using var reader = new StreamReader(totalPath);
         var line = await reader.ReadLineAsync();
 
@@ -94,7 +83,6 @@ public class CsvDiffStoreTests
         }
 
         //check last line
-        Console.WriteLine(line);
         Assert.That(line,
             Is.EqualTo(oldEntriesNegative.Last().Company + Constants.CsvSeparator + oldEntriesNegative.Last().Ticker +
                        Constants.CsvSeparator +

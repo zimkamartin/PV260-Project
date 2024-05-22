@@ -201,7 +201,6 @@ namespace StockAnalysisConsole
             catch (SenderException)
             {
                 Console.WriteLine("Email sending failed.");
-                return;
             }
         }
     }

@@ -1,6 +1,6 @@
 using StockAnalysis.Diff.Compute;
 
-namespace StockAnalysisTests.DiffTests;
+namespace StockAnalysisTests.DiffTests.DiffComputerTests;
 
 public class DiffComputerCreatorTests
 {

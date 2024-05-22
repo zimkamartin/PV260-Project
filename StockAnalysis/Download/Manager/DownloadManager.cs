@@ -32,7 +32,9 @@ public class DownloadManager
             foreach (var uri in holdings)
             {
                 await using var stream = await _getter.Get(uri.Uri, _client);
-                if (!await _storage.Store(stream, StoragePath, storageDirectory, uri.Name))
+                
+                if (stream is null 
+                    || !await _storage.Store(stream, StoragePath, storageDirectory, uri.Name))
                 {
                     return false;
                 }
@@ -45,12 +47,7 @@ public class DownloadManager
         {
             return false;
         }
-        // Rethrow the more serious exceptions on our end - Unauthorized Access, Path Too Long, etc.
-        catch (Exception)
-        {
-            throw;
-        }
-
+        
         return true;
     }
 }

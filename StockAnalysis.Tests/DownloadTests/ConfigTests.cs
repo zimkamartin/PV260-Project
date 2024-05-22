@@ -1,27 +1,14 @@
 using StockAnalysis.HoldingsConfig;
+using StockAnalysisTests.Utility;
 
 namespace StockAnalysisTests.DownloadTests;
 
 public class ConfigTests
 {
-    private string? _projectRoot;
-
-    [SetUp]
-    public void Setup()
-    {
-        var current = Environment.CurrentDirectory;
-        var projectDirectory = Directory.GetParent(current);
-        _projectRoot = current;
-        if (projectDirectory is not null)
-        {
-            _projectRoot = projectDirectory.Parent!.Parent!.FullName;
-        }
-    }
-
     [Test]
     public async Task Configuration_LoadConfiguration_EmptyFile()
     {
-        var config = new JsonConfiguration(_projectRoot + "/Mocks/empty_config.json");
+        var config = new JsonConfiguration(PathResolver.GetRoot() + "/Mocks/empty_config.json");
         var holdings = await config.LoadConfiguration();
 
         Assert.That(holdings, Is.Empty);
@@ -31,7 +18,7 @@ public class ConfigTests
     public async Task Configuration_LoadConfiguration_SingleEntry()
     {
         // Arrange
-        var config = new JsonConfiguration(_projectRoot + "/Mocks/single_config.json");
+        var config = new JsonConfiguration(PathResolver.GetRoot() + "/Mocks/single_config.json");
 
         // Act
         var holdings = await config.LoadConfiguration();
@@ -51,7 +38,7 @@ public class ConfigTests
     [Test]
     public async Task Configuration_LoadConfiguration_MultipleEntries()
     {
-        var config = new JsonConfiguration(_projectRoot + "/Mocks/multi_config.json");
+        var config = new JsonConfiguration(PathResolver.GetRoot() + "/Mocks/multi_config.json");
 
         var holdings = await config.LoadConfiguration();
         var holdingInformation = holdings.ToList();
@@ -79,7 +66,7 @@ public class ConfigTests
     [Test]
     public async Task Configuration_LoadConfiguration_NonExistentFile()
     {
-        var config = new JsonConfiguration(_projectRoot + "/Mocks/xxxNotExistsxxx.json");
+        var config = new JsonConfiguration(PathResolver.GetRoot() + "/Mocks/xxxNotExistsxxx.json");
 
         try
         {

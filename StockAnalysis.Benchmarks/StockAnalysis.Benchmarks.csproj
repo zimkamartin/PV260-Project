@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Aspose.PDF.Drawing" Version="24.4.0" />
       <PackageReference Include="BenchmarkDotNet" Version="0.13.12" />
       <PackageReference Include="WireMock.Net" Version="1.5.52" />
     </ItemGroup>

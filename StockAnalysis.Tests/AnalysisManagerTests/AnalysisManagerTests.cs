@@ -6,25 +6,17 @@ using StockAnalysisConsole;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 using WireMock.Server;
+using PathResolver = StockAnalysisTests.Utility.PathResolver;
 
 namespace StockAnalysisTests.AnalysisManagerTests;
 
 public class AnalysisManagerTests
 {
-    private string? _projectRoot;
-    private WireMockServer _server;
+    private WireMockServer _server = null!;
 
     [SetUp]
     public void Setup()
     {
-        var current = Environment.CurrentDirectory;
-        var projectDirectory = Directory.GetParent(current);
-        _projectRoot = current;
-        if (projectDirectory is not null)
-        {
-            _projectRoot = projectDirectory.Parent!.Parent!.FullName;
-        }
-
         _server = WireMockServer.Start(9876);
         // Most of the body is simply arbitrary data and has no effect on tests.
         _server.Given(Request.Create().WithPath("/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv").UsingGet()
@@ -72,7 +64,7 @@ public class AnalysisManagerTests
         // This is necessary, otherwise the website will reject our request.
         client.DefaultRequestHeaders.Add("User-Agent", "Other");
 
-        var dirPath = Path.Join(_projectRoot, directory);
+        var dirPath = Path.Join(PathResolver.GetRoot(), directory);
         var configPath = Path.Join(dirPath, configFile);
         var download = ManagerCreator.CreateManager(Path.Join(dirPath, "csv"), client, ".csv");
         var manager = new AnalysisManager(
@@ -107,7 +99,7 @@ public class AnalysisManagerTests
         // This is necessary, otherwise the website will reject our request.
         client.DefaultRequestHeaders.Add("User-Agent", "Other");
 
-        var dirPath = Path.Join(_projectRoot, directory);
+        var dirPath = Path.Join(PathResolver.GetRoot(), directory);
         var configPath = Path.Join(dirPath, configFile);
         var download = ManagerCreator.CreateManager(Path.Join(dirPath, "html"), client, ".csv");
         var manager = new AnalysisManager(

@@ -12,14 +12,14 @@ public class DownloadManagerTests
 {
     private const string StoragePath = ".";
     private const string StorageDir = "download-test";
-    private WireMockServer server;
+    private WireMockServer _server = null!;
 
     [SetUp]
     public void Setup()
     {
-        server = WireMockServer.Start(9876);
+        _server = WireMockServer.Start(9876);
         // Most of the body is simply arbitrary data and has no effect on tests.
-        server.Given(Request.Create().WithPath("/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv").UsingGet()
+        _server.Given(Request.Create().WithPath("/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv").UsingGet()
         ).RespondWith(
             Response
                     .Create()
@@ -31,7 +31,7 @@ public class DownloadManagerTests
                               "04/16/2024,ARKK,\"ROKU INC\",ROKU,77543R102,\"8,941,303\",\"$527,000,398.82\",7.96%\n" +
                               "04/16/2024,ARKK,\"BLOCK INC\",SQ,852234103,\"6,171,325\",\"$453,592,387.50\",6.85%\n")
             );
-        server.Given(Request.Create().WithPath("/ARK_GENOMIC_REVOLUTION_ETF_ARKG_HOLDINGS.csv").UsingGet()
+        _server.Given(Request.Create().WithPath("/ARK_GENOMIC_REVOLUTION_ETF_ARKG_HOLDINGS.csv").UsingGet()
         ).RespondWith(
             Response
                 .Create()
@@ -48,7 +48,7 @@ public class DownloadManagerTests
     [TearDown]
     public void Teardown()
     {
-        server.Stop();
+        _server.Stop();
     }
 
     [Test]

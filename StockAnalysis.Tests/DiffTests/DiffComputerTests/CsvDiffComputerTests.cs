@@ -1,12 +1,45 @@
-﻿using System.Text;
-using StockAnalysis.Diff.Compute;
+﻿using StockAnalysis.Diff.Compute;
 using StockAnalysis.Diff.Data;
 
-namespace StockAnalysisTests.DiffTests;
+namespace StockAnalysisTests.DiffTests.DiffComputerTests;
 
 
 public class CsvDiffComputerTests
 {
+    private static bool CompareData(IReadOnlyList<DiffData> data1, 
+                                    IReadOnlyList<DiffData> data2)
+    {
+        if (data1.Count != data2.Count)
+        {
+            return false;
+        }
+
+        for (var i = 0; i < data1.Count; i++)
+        {
+            if (data1[i].Ticker != data2[i].Ticker)
+            {
+                return false;
+            }
+
+            const double tolerance = 0.0001;
+            if (Math.Abs(data1[i].SharesChange - data2[i].SharesChange) > tolerance)
+            {
+                return false;
+            }
+
+            if (Math.Abs(data1[i].MarketValueChange - data2[i].MarketValueChange) > tolerance)
+            {
+                return false;
+            }
+
+            if (Math.Abs(data1[i].Weight - data2[i].Weight) > tolerance)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
     
     // If changes are computed correctly
     [Test]
@@ -21,7 +54,7 @@ public class CsvDiffComputerTests
         var diffData = changes.ToList();
         
         // Assert
-        Assert.That(DataGenerator.CompareData(diffData, DataGenerator.DiffCorrectCalculation(oldData, newData)));
+        Assert.That(CompareData(diffData, DataGenerator.GenerateExpectedResult(oldData, newData)));
     }
 
     [Test]
@@ -36,7 +69,7 @@ public class CsvDiffComputerTests
         var diffData = changes.ToList();
         
         // Assert
-        Assert.That(DataGenerator.CompareData(diffData, DataGenerator.DiffCorrectCalculation(oldData, newData)));
+        Assert.That(CompareData(diffData, DataGenerator.GenerateExpectedResult(oldData, newData)));
     }
     
     [Test]
@@ -51,7 +84,7 @@ public class CsvDiffComputerTests
         var diffData = changes.ToList();
         
         // Assert
-        Assert.That(DataGenerator.CompareData(diffData, DataGenerator.DiffCorrectCalculation(data2, data1)));
+        Assert.That(CompareData(diffData, DataGenerator.GenerateExpectedResult(data2, data1)));
     }
     
 }

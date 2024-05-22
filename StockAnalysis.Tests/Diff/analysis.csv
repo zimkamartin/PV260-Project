@@ -1,0 +1,10 @@
+sep=;
+New positions:;;;
+Company name;ticker;#shares;weight(%)
+TESLA INC;TSLA;4028071;9.83
+COINBASE GLOBAL INC -CLASS A;COIN;2630233;8.88
+ROKU INC;ROKU;8941303;7.96
+Increased positions:;;;
+Company name;ticker;#shares up%;weight(%)
+Reduced positions:;;;
+Company name;ticker;#shares down%;weight(%)

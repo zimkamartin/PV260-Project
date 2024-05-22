@@ -47,10 +47,5 @@ public static class EmailReader
         {
             return Array.Empty<string>();
         }
-        catch (Exception)
-        {
-            throw;
-        }
-
     }
 }

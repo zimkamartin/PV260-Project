@@ -11,10 +11,11 @@ public static class DataExtractor
     /// <returns>A triple of (newEntries, oldEntriesPositiveChange, oldEntriesNegativeChange).</returns>
     public static (List<DiffData>, List<DiffData>, List<DiffData>) ExtractEntries(IEnumerable<DiffData> data)
     {
-        var newEntries = data.Where(a => a.NewEntry).ToList();
-        var oldEntriesPositive = data.Where(
+        var dataArray = data as DiffData[] ?? data.ToArray();
+        var newEntries = dataArray.Where(a => a.NewEntry).ToList();
+        var oldEntriesPositive = dataArray.Where(
             a => a is { NewEntry: false, SharesChange: >= 0 }).ToList();
-        var oldEntriesNegative = data.Where(
+        var oldEntriesNegative = dataArray.Where(
             a => a is { NewEntry: false, SharesChange: < 0 }).ToList();
         return (newEntries, oldEntriesPositive, oldEntriesNegative);
     }

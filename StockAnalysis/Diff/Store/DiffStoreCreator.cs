@@ -4,14 +4,12 @@ public static class DiffStoreCreator
 {
     public static IDiffStore CreateStore(string outputExtension)
     {
-        switch (outputExtension.Replace(".", "").ToLower())
+        return outputExtension.Replace(".", "").ToLower() switch
         {
-            case "csv":
-                return new CsvDiffStore();
-            case "html":
-                return new HtmlDiffStore();
-            default:
-                throw new NotImplementedException("Chosen output extension is currently not supported.");
-        }
+            "csv" => new CsvDiffStore(),
+            "html" => new HtmlDiffStore(),
+            "pdf" => new PdfDiffStore(),
+            _ => throw new NotImplementedException("Chosen output extension is currently not supported.")
+        };
     }
 }
