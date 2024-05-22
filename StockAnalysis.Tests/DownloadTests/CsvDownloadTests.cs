@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using StockAnalysis.Download.Getter;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
@@ -27,18 +26,6 @@ public class CsvDownloadTests
                               "04/16/2024,ARKK,\"ROKU INC\",ROKU,77543R102,\"8,941,303\",\"$527,000,398.82\",7.96%\n" +
                               "04/16/2024,ARKK,\"BLOCK INC\",SQ,852234103,\"6,171,325\",\"$453,592,387.50\",6.85%\n")
             );
-        _server.Given(Request.Create().WithPath("/ARK_GENOMIC_REVOLUTION_ETF_ARKG_HOLDINGS.csv").UsingGet()
-        ).RespondWith(
-            Response
-                .Create()
-                .WithStatusCode(200)
-                .WithHeader("Content-Type", "text/csv")
-                .WithBody("date,fund,company,ticker,cusip,shares,\"market value ($)\",\"weight (%)\"\n" +
-                          "04/16/2024,ARKG,\"TESLA INC\",TSLA,88160R101,\"4,028,071\",\"$650,452,905.08\",9.83%\n" +
-                          "04/16/2024,ARKG,\"COINBASE GLOBAL INC -CLASS A\",COIN,19260Q107,\"2,630,233\",\"$587,620,354.53\",8.88%\n" +
-                          "04/16/2024,ARKG,\"ROKU INC\",ROKU,77543R102,\"8,941,303\",\"$527,000,398.82\",7.96%\n" +
-                          "04/16/2024,ARKG,\"BLOCK INC\",SQ,852234103,\"6,171,325\",\"$453,592,387.50\",6.85%\n")
-        );
     }
 
     [TearDown]

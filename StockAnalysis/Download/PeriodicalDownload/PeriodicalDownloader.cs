@@ -47,7 +47,7 @@ public class PeriodicalDownloader
         var current = _dateTimeProvider.UtcNow();
         // TODO: Is async callback OK?
         // TODO: Configure storage directory based on download period. Use the new DateManipulator class
-        var timer = new Timer(x =>
+        var timer = new Timer(_ =>
                 _periodicEvent(_client, _outExtension, _inExtension, _period)
             , null, _period.TimeToGo(current), _period.Interval);
 

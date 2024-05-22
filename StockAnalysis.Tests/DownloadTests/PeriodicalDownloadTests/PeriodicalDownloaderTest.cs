@@ -21,7 +21,7 @@ public class PeriodicalDownloaderTest
     {
         // Arrange
         using var client = new HttpClient();
-        var extension = Constants.CsvExtension;
+        const string extension = Constants.CsvExtension;
 
         var start = new DateTime(2024, 3, 10);
         const int count = 3;

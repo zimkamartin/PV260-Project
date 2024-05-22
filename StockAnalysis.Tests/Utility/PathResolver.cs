@@ -10,6 +10,6 @@ public static class PathResolver
     
     public static string GetTestDataPath()
     {
-        return Path.Combine(GetRoot(), "TestData");;
+        return Path.Combine(GetRoot(), "TestData");
     }
 }

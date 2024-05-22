@@ -47,12 +47,7 @@ public class DownloadManager
         {
             return false;
         }
-        // Rethrow the more serious exceptions on our end - Unauthorized Access, Path Too Long, etc.
-        catch (Exception)
-        {
-            throw;
-        }
-
+        
         return true;
     }
 }
